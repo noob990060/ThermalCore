@@ -80,15 +80,6 @@ import static cofh.thermal.core.init.registries.TCoreMenus.*;
 import static cofh.thermal.lib.util.ThermalFlags.*;
 import static cofh.thermal.lib.util.ThermalIDs.*;
 
-import net.neoforged.neoforge.common.NeoForge;
-import cofh.thermal.core.common.event.TCoreCommonSetupEvents;
-
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import cofh.thermal.lib.util.ThermalRecipeManagers;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 @Mod (ID_THERMAL)
 public class ThermalCore {
@@ -278,29 +269,6 @@ public class ThermalCore {
         event.register(FLUID_CELL_CONTAINER.get(), FluidCellScreen::new);
 
         // event.register(ITEM_CELL_CONTAINER, ItemCellScreen::new);
-    }
-
-    @SubscribeEvent
-    public void addReloadListener(final AddReloadListenerEvent event) {
-
-        event.addListener((ResourceManagerReloadListener) manager -> {
-                ThermalRecipeManagers.instance().setServerRecipeManager(event.getServerResources().getRecipeManager());
-                ThermalRecipeManagers.instance().refreshServer();
-        });
-    }
-
-    @SubscribeEvent
-    public void tagsUpdated(final TagsUpdatedEvent event) {
-
-        ThermalRecipeManagers.instance().refreshServer();
-        ThermalRecipeManagers.instance().refreshClient();
-    }
-
-    @SubscribeEvent
-    public void recipesUpdated(final RecipesUpdatedEvent event) {
-
-        ThermalRecipeManagers.instance().setClientRecipeManager(event.getRecipeManager());
-        ThermalRecipeManagers.instance().refreshClient();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

@@ -29,14 +29,8 @@ public class TCoreRecipeTypes {
     public static final String ID_POTION_DIFFUSER_BOOST = "potion_diffuser_boost";
 
     public static final Supplier<SerializableRecipeType<HiveExtractorMapping>> HIVE_EXTRACTOR_MAPPING = RECIPE_TYPES.register(ID_HIVE_EXTRACTOR_MAPPING, () -> new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_HIVE_EXTRACTOR_MAPPING)));
-    public static final Supplier<SerializableRecipeType<TreeExtractorMapping>> TREE_EXTRACTOR_MAPPING = RECIPE_TYPES.register(ID_TREE_EXTRACTOR_MAPPING, () -> {
-        System.out.println("[TREE_EXTRACTOR DEBUG] Creating TREE_EXTRACTOR_MAPPING recipe type!");
-        return new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_TREE_EXTRACTOR_MAPPING));
-    });
-    public static final Supplier<SerializableRecipeType<TreeExtractorBoost>> TREE_EXTRACTOR_BOOST = RECIPE_TYPES.register(ID_TREE_EXTRACTOR_BOOST, () -> {
-        System.out.println("[TREE_EXTRACTOR DEBUG] Creating TREE_EXTRACTOR_BOOST recipe type!");
-        return new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_TREE_EXTRACTOR_BOOST));
-    });
+    public static final Supplier<SerializableRecipeType<TreeExtractorMapping>> TREE_EXTRACTOR_MAPPING = RECIPE_TYPES.register(ID_TREE_EXTRACTOR_MAPPING, () -> new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_TREE_EXTRACTOR_MAPPING)));
+    public static final Supplier<SerializableRecipeType<TreeExtractorBoost>> TREE_EXTRACTOR_BOOST = RECIPE_TYPES.register(ID_TREE_EXTRACTOR_BOOST, () -> new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_TREE_EXTRACTOR_BOOST)));
     public static final Supplier<SerializableRecipeType<FisherBoost>> FISHER_BOOST = RECIPE_TYPES.register(ID_FISHER_BOOST, () -> new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_FISHER_BOOST)));
     public static final Supplier<SerializableRecipeType<RockGenMapping>> ROCK_GEN_MAPPING = RECIPE_TYPES.register(ID_ROCK_GEN_MAPPING, () -> new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_ROCK_GEN_MAPPING)));
     public static final Supplier<SerializableRecipeType<PotionDiffuserBoost>> POTION_DIFFUSER_BOOST = RECIPE_TYPES.register(ID_POTION_DIFFUSER_BOOST, () -> new SerializableRecipeType<>(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ID_THERMAL, ID_POTION_DIFFUSER_BOOST)));

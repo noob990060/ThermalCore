@@ -1,0 +1,30 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "category":  "misc",
+    "ingredients":  [
+                        {
+                            "tag":  "c:sand"
+                        },
+                        {
+                            "item":  "minecraft:bone_meal"
+                        },
+                        {
+                            "item":  "thermal:rich_slag"
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:gems/niter"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/niter"
+                                             }
+                                         ]
+                        }
+                    ],
+    "result":  {
+                   "count":  2,
+                   "id":  "thermal:phytogro"
+               }
+}

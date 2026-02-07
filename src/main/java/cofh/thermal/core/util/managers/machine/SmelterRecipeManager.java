@@ -65,6 +65,9 @@ public class SmelterRecipeManager extends AbstractManager implements IRecipeMana
 
     public void addRecipe(ThermalRecipe recipe, BaseMachineRecipe.RecipeType type) {
 
+        for (var input : recipe.getInputItems()) {
+            input.ingredient().itemStacks = null;
+        }
         switch (recipe.getInputItems().size()) {
             case 1 -> {
                 for (ItemStack firstInput : recipe.getInputItems().get(0).getItems()) {
@@ -198,6 +201,7 @@ public class SmelterRecipeManager extends AbstractManager implements IRecipeMana
 
     public void addCatalyst(ThermalCatalyst catalyst) {
 
+        catalyst.getIngredient().itemStacks = null;
         for (ItemStack ingredient : catalyst.getIngredient().getItems()) {
             addCatalyst(ingredient, catalyst.getPrimaryMod(), catalyst.getSecondaryMod(), catalyst.getEnergyMod(), catalyst.getMinChance(), catalyst.getUseChance());
         }

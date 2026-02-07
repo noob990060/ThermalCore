@@ -1,0 +1,28 @@
+{
+    "neoforge:conditions":  [
+                                {
+                                    "type":  "cofh_core:flag_set",
+                                    "flag":  "thermal:hazmat_armor"
+                                }
+                            ],
+    "type":  "minecraft:crafting_shaped",
+    "category":  "equipment",
+    "key":  {
+                "G":  {
+                          "tag":  "c:glass_panes"
+                      },
+                "I":  {
+                          "tag":  "c:ingots/iron"
+                      },
+                "X":  {
+                          "item":  "thermal:hazmat_fabric"
+                      }
+            },
+    "pattern":  [
+                    "XIX",
+                    "IGI"
+                ],
+    "result":  {
+                   "id":  "thermal:hazmat_helmet"
+               }
+}

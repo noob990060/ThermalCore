@@ -1,0 +1,69 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "category":  "misc",
+    "ingredients":  [
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/copper"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/copper"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/copper"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/copper"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/copper"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/copper"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/silver"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/silver"
+                                             }
+                                         ]
+                        },
+                        {
+                            "tag":  "c:dusts/redstone"
+                        },
+                        {
+                            "tag":  "c:dusts/redstone"
+                        },
+                        {
+                            "tag":  "c:dusts/redstone"
+                        },
+                        {
+                            "tag":  "c:dusts/redstone"
+                        },
+                        {
+                            "item":  "minecraft:fire_charge"
+                        }
+                    ],
+    "result":  {
+                   "count":  4,
+                   "id":  "thermal:signalum_ingot"
+               }
+}

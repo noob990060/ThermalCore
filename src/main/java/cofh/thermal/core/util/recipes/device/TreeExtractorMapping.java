@@ -109,12 +109,11 @@ public class TreeExtractorMapping extends SerializableRecipe {
     public static class Serializer implements RecipeSerializer<TreeExtractorMapping> {
 
         public Serializer() {
-            System.out.println("[TREE_EXTRACTOR DEBUG] TreeExtractorMapping.Serializer instantiated!");
+
         }
 
         @Override
         public MapCodec<TreeExtractorMapping> codec() {
-            System.out.println("[TREE_EXTRACTOR DEBUG] TreeExtractorMapping.Serializer.codec() called! This means recipe parsing is happening!");
             return JsonMapCodec.INSTANCE
                 .flatXmap(json -> {
                     try {
@@ -153,8 +152,6 @@ public class TreeExtractorMapping extends SerializableRecipe {
         }
 
         protected TreeExtractorMapping fromJson(JsonObject json) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] TreeExtractorMapping.Serializer.fromJson() called with JSON: " + json);
-            
             BlockIngredient trunk = BlockIngredient.EMPTY;
             BlockIngredient leaves = BlockIngredient.EMPTY;
             Block sapling = Blocks.AIR;

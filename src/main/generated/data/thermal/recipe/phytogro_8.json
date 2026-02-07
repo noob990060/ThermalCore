@@ -1,0 +1,46 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "category":  "misc",
+    "ingredients":  [
+                        {
+                            "tag":  "c:sand"
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:gems/apatite"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/apatite"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:gems/apatite"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/apatite"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:gems/niter"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/niter"
+                                             }
+                                         ]
+                        }
+                    ],
+    "result":  {
+                   "count":  8,
+                   "id":  "thermal:phytogro"
+               }
+}

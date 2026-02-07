@@ -1,0 +1,21 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "ingredients":  [
+                        {
+                            "item":  "minecraft:book"
+                        },
+                        {
+                            "item":  "thermal:wrench"
+                        }
+                    ],
+    "result":  {
+                   "nbt":  "{\"patchouli:book\":\"thermal:guidebook\"}",
+                   "id":  "patchouli:guide_book"
+               },
+    "conditions":  [
+                       {
+                           "type":  "c:mod_loaded",
+                           "modid":  "patchouli"
+                       }
+                   ]
+}

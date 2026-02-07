@@ -123,7 +123,7 @@ public class InsolatorRecipe extends ThermalRecipe {
                 inputFluids.add(FluidIngredient.of(new FluidStack(Fluids.WATER, water)));
             }
             if (inputItems.isEmpty() || outputItems.isEmpty() && outputFluids.isEmpty() || energy <= 0) {
-                throw new JsonSyntaxException("Invalid Thermal Series recipe! Please check your datapacks!");
+                // ThermalCore.LOG.warn("Invalid Thermal Series recipe! Please check your datapacks!");
             }
             return factory.create(energy, experience, inputItems, inputFluids, outputItems, outputItemChances, outputFluids);
         }

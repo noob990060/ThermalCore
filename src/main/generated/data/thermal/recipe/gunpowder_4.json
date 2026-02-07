@@ -1,0 +1,46 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "category":  "misc",
+    "ingredients":  [
+                        {
+                            "item":  "minecraft:charcoal"
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:gems/niter"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/niter"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:gems/niter"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/niter"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:gems/sulfur"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/sulfur"
+                                             }
+                                         ]
+                        }
+                    ],
+    "result":  {
+                   "count":  4,
+                   "id":  "minecraft:gunpowder"
+               }
+}

@@ -20,15 +20,13 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UnderlayBakedModel extends BakedModelWrapper<BakedModel> implements IDynamicBakedModel {
 
-    private static final Map<FluidCacheWrapper, BakedQuad[]> FLUID_QUAD_CACHE = new Object2ObjectOpenHashMap<>();
-    private static final IdentityHashMap<BlockState, BakedQuad[]> UNDERLAY_QUAD_CACHE = new IdentityHashMap<>();
+    private static final Map<FluidCacheWrapper, BakedQuad[]> FLUID_QUAD_CACHE = new ConcurrentHashMap<>();
+    private static final Map<BlockState, BakedQuad[]> UNDERLAY_QUAD_CACHE = Collections.synchronizedMap(new IdentityHashMap<>());
 
     public static void clearCache() {
 

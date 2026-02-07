@@ -1,0 +1,71 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "category":  "misc",
+    "ingredients":  [
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/lead"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/lead"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/lead"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/lead"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/lead"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/lead"
+                                             }
+                                         ]
+                        },
+                        {
+                            "tag":  "c:dusts/diamond"
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:ender_pearls"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/ender_pearl"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:ender_pearls"
+                                             },
+                                             {
+                                                 "tag":  "c:dusts/ender_pearl"
+                                             }
+                                         ]
+                        },
+                        {
+                            "item":  "minecraft:fire_charge"
+                        }
+                    ],
+    "result":  {
+                   "count":  2,
+                   "id":  "thermal:enderium_ingot"
+               }
+}

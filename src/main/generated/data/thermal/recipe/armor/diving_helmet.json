@@ -1,0 +1,28 @@
+{
+    "neoforge:conditions":  [
+                                {
+                                    "type":  "cofh_core:flag_set",
+                                    "flag":  "thermal:diving_armor"
+                                }
+                            ],
+    "type":  "minecraft:crafting_shaped",
+    "category":  "equipment",
+    "key":  {
+                "G":  {
+                          "tag":  "c:glass_panes"
+                      },
+                "I":  {
+                          "tag":  "c:ingots/gold"
+                      },
+                "X":  {
+                          "item":  "thermal:diving_fabric"
+                      }
+            },
+    "pattern":  [
+                    "XIX",
+                    "IGI"
+                ],
+    "result":  {
+                   "id":  "thermal:diving_helmet"
+               }
+}

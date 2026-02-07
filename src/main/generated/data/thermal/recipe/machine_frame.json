@@ -1,0 +1,29 @@
+{
+    "neoforge:conditions":  [
+                                {
+                                    "type":  "cofh_core:flag_set",
+                                    "flag":  "machine_frame"
+                                }
+                            ],
+    "type":  "minecraft:crafting_shaped",
+    "category":  "misc",
+    "key":  {
+                "G":  {
+                          "tag":  "c:glass"
+                      },
+                "I":  {
+                          "tag":  "c:ingots/iron"
+                      },
+                "T":  {
+                          "tag":  "c:gears/tin"
+                      }
+            },
+    "pattern":  [
+                    "IGI",
+                    "GTG",
+                    "IGI"
+                ],
+    "result":  {
+                   "id":  "thermal:machine_frame"
+               }
+}

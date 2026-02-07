@@ -1,0 +1,26 @@
+{
+    "neoforge:conditions":  [
+                                {
+                                    "type":  "cofh_core:flag_set",
+                                    "flag":  "thermal:basic_explosives"
+                                }
+                            ],
+    "type":  "minecraft:crafting_shaped",
+    "category":  "equipment",
+    "key":  {
+                "G":  {
+                          "tag":  "c:gunpowder"
+                      },
+                "P":  {
+                          "tag":  "c:slimeballs"
+                      }
+            },
+    "pattern":  [
+                    "GPG",
+                    "PGP",
+                    "GPG"
+                ],
+    "result":  {
+                   "id":  "thermal:slime_tnt"
+               }
+}

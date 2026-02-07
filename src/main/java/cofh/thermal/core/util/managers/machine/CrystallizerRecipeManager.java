@@ -52,6 +52,9 @@ public class CrystallizerRecipeManager extends AbstractManager implements IRecip
 
     public void addRecipe(ThermalRecipe recipe) {
 
+        for (var input : recipe.getInputItems()) {
+            input.ingredient().itemStacks = null;
+        }
         switch (recipe.getInputItems().size()) {
             case 1 -> {
                 for (ItemStack firstInput : recipe.getInputItems().get(0).getItems()) {

@@ -87,7 +87,7 @@ public class DynamoFuelSerializer<T extends ThermalFuel> implements RecipeSerial
             ThermalCore.LOG.warn("Energy value for a Dynamo Fuel was out of allowable range and has been clamped between + " + minEnergy + " and " + maxEnergy + ".");
         }
         if (inputItems.isEmpty() && inputFluids.isEmpty()) {
-            throw new JsonSyntaxException("Invalid Thermal Series fuel! Please check your datapacks!");
+            // ThermalCore.LOG.warn("Invalid Thermal Series fuel! Please check your datapacks!");
         }
         return factory.create(energy, inputItems, inputFluids);
     }

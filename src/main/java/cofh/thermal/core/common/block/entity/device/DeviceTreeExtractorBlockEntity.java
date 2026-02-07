@@ -97,44 +97,30 @@ public class DeviceTreeExtractorBlockEntity extends DeviceBlockEntity implements
     protected void updateValidity() {
 
         if (level == null || !level.isAreaLoaded(worldPosition, 1) || level.isClientSide) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] Skipping update - level null/not loaded/client side");
             return;
         }
-        System.out.println("[TREE_EXTRACTOR DEBUG] Starting validity check at position: " + worldPosition);
         cached = true;
         if (isValid()) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] Already have valid recipe, checking if tree still valid...");
             Predicate<BlockState> validLeaf = recipe.getLeaves();
             Predicate<BlockState> validLog = recipe.getTrunk();
             boolean leavesValid = Arrays.stream(leaves).allMatch(pos -> validLeaf.test(level.getBlockState(pos)));
             boolean logsValid = Arrays.stream(logs).allMatch(pos -> validLog.test(level.getBlockState(pos)));
-            System.out.println("[TREE_EXTRACTOR DEBUG] Leaves valid: " + leavesValid + ", Logs valid: " + logsValid);
-            System.out.println("[TREE_EXTRACTOR DEBUG] Found " + leaves.length + " leaves, " + logs.length + " logs");
             if (leavesValid && logsValid) {
-                System.out.println("[TREE_EXTRACTOR DEBUG] Tree still valid, keeping current recipe");
                 return;
             }
-            System.out.println("[TREE_EXTRACTOR DEBUG] Tree structure changed, need to redetect");
         }
         Direction[] searchDirs = getSearchOrder();
-        System.out.println("[TREE_EXTRACTOR DEBUG] Searching in directions: " + Arrays.toString(searchDirs));
         for (Direction dir : searchDirs) {
             BlockPos treePos = worldPosition.relative(dir);
-            System.out.println("[TREE_EXTRACTOR DEBUG] Checking direction " + dir + " at position: " + treePos);
             TreeInfo info = detectTree(treePos);
             if (info != null) {
-                System.out.println("[TREE_EXTRACTOR DEBUG] Found valid tree!");
-                System.out.println("[TREE_EXTRACTOR DEBUG] Recipe fluid: " + info.recipe.getFluid().getFluid());
-                System.out.println("[TREE_EXTRACTOR DEBUG] Tree has " + info.logs.length + " logs and " + info.leaves.length + " leaves");
                 leaves = info.leaves;
                 logs = info.logs;
                 recipe = info.recipe;
                 renderFluid = recipe.getFluid();
                 return;
             }
-            System.out.println("[TREE_EXTRACTOR DEBUG] No valid tree found in direction " + dir);
         }
-        System.out.println("[TREE_EXTRACTOR DEBUG] No valid trees found in any direction, clearing recipe");
         logs = new BlockPos[0];
         leaves = new BlockPos[0];
         recipe = null;
@@ -163,46 +149,29 @@ public class DeviceTreeExtractorBlockEntity extends DeviceBlockEntity implements
 
         --process;
         if (process > 0 || !isActive) {
-            if (process > 0) {
-                System.out.println("[TREE_EXTRACTOR DEBUG] Processing, ticks remaining: " + process);
-            } else if (!isActive) {
-                System.out.println("[TREE_EXTRACTOR DEBUG] Not active, skipping tick");
-            }
             return;
         }
-        System.out.println("[TREE_EXTRACTOR DEBUG] Processing complete, starting extraction");
         updateValidity();
         process = getTimeConstant();
         Fluid curFluid = renderFluid.getFluid();
-        System.out.println("[TREE_EXTRACTOR DEBUG] Time constant set to: " + process + " ticks");
 
         if (isValid()) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] Valid recipe found, checking boosts");
             if (boostCycles > 0) {
                 --boostCycles;
-                System.out.println("[TREE_EXTRACTOR DEBUG] Using boost, cycles remaining: " + boostCycles + "/" + boostMax + ", multiplier: " + boostMult);
             } else if (!inputSlot.isEmpty()) {
-                System.out.println("[TREE_EXTRACTOR DEBUG] Consuming boost item: " + inputSlot.getItemStack());
                 boostCycles = TreeExtractorManager.instance().getBoostCycles(inputSlot.getItemStack());
                 boostMax = boostCycles;
                 boostMult = TreeExtractorManager.instance().getBoostOutputMod(inputSlot.getItemStack());
                 inputSlot.consume(1);
-                System.out.println("[TREE_EXTRACTOR DEBUG] New boost cycles: " + boostCycles + ", multiplier: " + boostMult);
             } else {
-                System.out.println("[TREE_EXTRACTOR DEBUG] No boost available, using base multiplier");
                 boostCycles = 0;
                 boostMult = 1.0F;
             }
             float sizeMult = MathHelper.sqrt((float) Math.min(logs.length, recipe.getMaxHeight()) * Math.min(leaves.length, recipe.getMaxLeaves()) / (recipe.getMinHeight() * recipe.getMinLeaves()));
-            System.out.println("[TREE_EXTRACTOR DEBUG] Size multiplier: " + sizeMult + " (logs: " + logs.length + "/" + recipe.getMaxHeight() + ", leaves: " + leaves.length + "/" + recipe.getMaxLeaves() + ")");
             int outputAmount = (int) (renderFluid.getAmount() * baseMod * boostMult * sizeMult);
-            System.out.println("[TREE_EXTRACTOR DEBUG] Producing " + outputAmount + " mB of " + renderFluid.getFluid());
             outputTank.fill(new FluidStack(renderFluid.getFluid(), outputAmount), EXECUTE);
-        } else {
-            System.out.println("[TREE_EXTRACTOR DEBUG] No valid recipe, skipping extraction");
         }
         if (curFluid != renderFluid.getFluid()) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] Fluid type changed, sending update packet");
             TileStatePacket.sendToClient(this);
         }
     }
@@ -359,35 +328,17 @@ public class DeviceTreeExtractorBlockEntity extends DeviceBlockEntity implements
     @Nullable
     protected TreeInfo detectTree(BlockPos basePos) {
 
-        System.out.println("[TREE_EXTRACTOR DEBUG] Detecting tree at base position: " + basePos);
         BlockState base = level.getBlockState(basePos);
-        System.out.println("[TREE_EXTRACTOR DEBUG] Base block state: " + base);
-        
-        // Debug: Show all available recipes
-        System.out.println("[TREE_EXTRACTOR DEBUG] Available recipes:");
-        TreeExtractorManager.instance().getRecipes().forEach(recipe -> {
-            System.out.println("[TREE_EXTRACTOR DEBUG] - Recipe trunk: " + recipe.getTrunk() + ", leaves: " + recipe.getLeaves() + ", fluid: " + recipe.getFluid().getFluid());
-        });
-        
-        // Find recipes matching trunk
+
         TreeExtractorMapping[] recipes = TreeExtractorManager.instance().getRecipes()
-                .filter(recipe -> {
-                    boolean matches = recipe.getTrunk().test(base);
-                    System.out.println("[TREE_EXTRACTOR DEBUG] Testing recipe trunk " + recipe.getTrunk() + " against " + base + ": " + matches);
-                    return matches;
-                })
+                .filter(recipe -> recipe.getTrunk().test(base))
                 .toArray(TreeExtractorMapping[]::new);
-        System.out.println("[TREE_EXTRACTOR DEBUG] Found " + recipes.length + " recipes matching trunk block");
         if (recipes.length <= 0) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] No recipes match this trunk block");
             return null;
         }
 
-        // Split recipes by growth direction
-        System.out.println("[TREE_EXTRACTOR DEBUG] Trying UP direction first");
         TreeInfo result = detectTreeDirection(recipes, basePos, Direction.UP);
         if (result == null) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] UP direction failed, trying DOWN direction");
             result = detectTreeDirection(recipes, basePos, Direction.DOWN);
         }
         return result;
@@ -396,52 +347,40 @@ public class DeviceTreeExtractorBlockEntity extends DeviceBlockEntity implements
     @Nullable
     protected TreeInfo detectTreeDirection(TreeExtractorMapping[] recipes, BlockPos base, Direction growth) {
 
-        System.out.println("[TREE_EXTRACTOR DEBUG] Detecting tree direction " + growth + " from base " + base);
-        // Traverse tree to find logs
         int min = level.getMinBuildHeight();
         int max = level.getMaxBuildHeight();
         List<BlockPos> logs = new ArrayList<>();
         logs.add(base.immutable());
         BlockPos.MutableBlockPos cursor = base.mutable();
-        System.out.println("[TREE_EXTRACTOR DEBUG] Starting trunk traversal, build limits: " + min + " to " + max);
         scan:
         while (cursor.getY() < max && cursor.getY() > min) {
             cursor.move(growth);
-            System.out.println("[TREE_EXTRACTOR DEBUG] Checking position " + cursor + " for trunk continuation");
             for (Vec3i offset : TRUNK_SEARCH) {
                 cursor.move(offset);
                 BlockState state = level.getBlockState(cursor);
-                System.out.println("[TREE_EXTRACTOR DEBUG] Testing offset " + offset + " at " + cursor + ", state: " + state);
                 TreeExtractorMapping[] matching = Arrays.stream(recipes)
                         .filter(recipe -> recipe.getTrunk().test(state))
                         .toArray(TreeExtractorMapping[]::new);
                 if (matching.length > 0) {
-                    System.out.println("[TREE_EXTRACTOR DEBUG] Found trunk continuation! " + matching.length + " recipes match");
                     logs.add(cursor.immutable());
                     recipes = matching;
                     continue scan;
                 }
                 cursor.move(-offset.getX(), -offset.getY(), -offset.getZ());
             }
-            System.out.println("[TREE_EXTRACTOR DEBUG] No trunk continuation found, ending trunk search");
             break;
         }
         int height = logs.size();
-        System.out.println("[TREE_EXTRACTOR DEBUG] Trunk traversal complete, found " + height + " logs");
         recipes = Arrays.stream(recipes)
                 .filter(recipe -> height >= recipe.getMinHeight())
                 .toArray(TreeExtractorMapping[]::new);
-        System.out.println("[TREE_EXTRACTOR DEBUG] " + recipes.length + " recipes accept this height");
         if (recipes.length <= 0) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] No recipes accept height " + height);
             return null;
         }
 
         // Find number of leaves around top log
-        System.out.println("[TREE_EXTRACTOR DEBUG] Starting leaf detection from top log at " + cursor);
         Reference2ReferenceMap<TreeExtractorMapping, LongList> leaves = new Reference2ReferenceArrayMap<>();
         for (TreeExtractorMapping recipe : recipes) {
-            System.out.println("[TREE_EXTRACTOR DEBUG] Recipe requires min " + recipe.getMinLeaves() + " leaves, max " + recipe.getMaxLeaves());
             leaves.put(recipe, new LongArrayList(recipe.getMaxLeaves()));
         }
         cursor = logs.get(logs.size() - 1).mutable();
@@ -452,7 +391,6 @@ public class DeviceTreeExtractorBlockEntity extends DeviceBlockEntity implements
         int x = cursor.getX();
         int y = cursor.getY();
         int z = cursor.getZ();
-        System.out.println("[TREE_EXTRACTOR DEBUG] Starting BFS leaf search within " + LEAF_SEARCH_DIST + " blocks");
         while (!queue.isEmpty()) {
             long pos = queue.dequeueLong();
             for (Direction dir : Direction.values()) {
@@ -466,9 +404,7 @@ public class DeviceTreeExtractorBlockEntity extends DeviceBlockEntity implements
                             LongList blocks = entry.getValue();
                             blocks.add(adj);
                             valid = true;
-                            System.out.println("[TREE_EXTRACTOR DEBUG] Found leaf at " + cursor.set(adj) + " for recipe, total: " + blocks.size());
                             if (blocks.size() >= recipe.getMaxLeaves()) {
-                                System.out.println("[TREE_EXTRACTOR DEBUG] Found max leaves, returning tree info");
                                 return new TreeInfo(recipe, logs, blocks);
                             }
                         } else if (recipe.getTrunk().test(state)) {
@@ -481,10 +417,8 @@ public class DeviceTreeExtractorBlockEntity extends DeviceBlockEntity implements
                 }
             }
         }
-        System.out.println("[TREE_EXTRACTOR DEBUG] BFS complete, checking leaf counts");
         return leaves.reference2ReferenceEntrySet().stream()
                 .filter(entry -> entry.getValue().size() >= entry.getKey().getMinLeaves())
-                .peek(entry -> System.out.println("[TREE_EXTRACTOR DEBUG] Recipe has " + entry.getValue().size() + " leaves (min: " + entry.getKey().getMinLeaves() + ")"))
                 .max(Comparator.comparingInt(entry -> entry.getValue().size()))
                 .map(entry -> new TreeInfo(entry.getKey(), logs, entry.getValue()))
                 .orElse(null);

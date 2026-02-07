@@ -49,6 +49,9 @@ public class ChillerRecipeManager extends AbstractManager implements IRecipeMana
 
     public void addRecipe(ThermalRecipe recipe) {
 
+        for (var input : recipe.getInputItems()) {
+            input.ingredient().itemStacks = null;
+        }
         if (!recipe.getInputFluids().isEmpty()) {
             for (FluidStack fluidInput : recipe.getInputFluids().get(0).getFluids()) {
                 if (!recipe.getInputItems().isEmpty()) {

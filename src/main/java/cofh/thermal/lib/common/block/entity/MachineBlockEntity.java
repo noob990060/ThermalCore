@@ -126,7 +126,7 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
     // region PROCESS
     protected boolean canProcessStart() {
 
-        if (energyStorage.getEnergyStored() - process < processTick) {
+        if (energyStorage.getEnergyStored() < processTick || energyStorage.getEnergyStored() - process < processTick) {
             return false;
         }
         if (!validateInputs()) {
@@ -150,6 +150,7 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
         if (cacheRenderFluid()) {
             TileStatePacket.sendToClient(this);
         }
+        markChunkUnsaved();
     }
 
     protected void processFinish() {
@@ -158,9 +159,15 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
             processOff();
             return;
         }
-        resolveOutputs();
-        resolveInputs();
-        markDirtyFast();
+        // Use vanilla approach: check outputs can be placed, then consume inputs and produce outputs atomically
+        if (canPlaceOutputs()) {
+            resolveOutputs();
+            resolveInputs();
+            markDirtyFast();
+        } else {
+            // Output placement failed, don't consume inputs
+            processOff();
+        }
     }
 
     protected void processOff() {
@@ -363,7 +370,7 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
                 ItemStorageCoFH matchSlot = null;
                 for (ItemStorageCoFH slot : outputSlots()) {
                     ItemStack output = slot.getItemStack();
-                    if (itemsEqualWithTags(output, recipeOutput) && output.getCount() < output.getMaxStackSize()) {
+                    if (itemsEqualWithTags(output, recipeOutput) && output.getCount() + outputCount <= output.getMaxStackSize()) {
                         output.grow(outputCount);
                         matchSlot = slot;
                         break;
@@ -380,7 +387,7 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
                 }
                 if (matchSlot != null && chance > BASE_CHANCE) {
                     chance -= (int) chance;
-                    if (MathHelper.RANDOM.nextFloat() < chance) {
+                    if (MathHelper.RANDOM.nextFloat() < chance && matchSlot.getItemStack().getCount() + recipeCount <= matchSlot.getItemStack().getMaxStackSize()) {
                         matchSlot.getItemStack().grow(recipeCount);
                     }
                 }
@@ -420,6 +427,62 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
         for (int i = 0; i < fluidInputCounts.size(); ++i) {
             inputTanks().get(i).modify(-fluidInputCounts.get(i));
         }
+    }
+
+    protected boolean canPlaceOutputs() {
+
+        if (curRecipe == null) {
+            return false;
+        }
+        
+        List<ItemStack> recipeOutputItems = curRecipe.getOutputItems(this);
+        List<FluidStack> recipeOutputFluids = curRecipe.getOutputFluids(this);
+        
+        // Check item outputs (mirroring vanilla canBurn logic)
+        for (int i = 0; i < recipeOutputItems.size(); i++) {
+            ItemStack recipeOutput = recipeOutputItems.get(i);
+            boolean canPlace = false;
+            for (ItemStorageCoFH slot : outputSlots()) {
+                ItemStack output = slot.getItemStack();
+                if (output.isEmpty()) {
+                    canPlace = true;
+                    break;
+                } else if (itemsEqualWithTags(output, recipeOutput)) {
+                    // Check if adding recipe output would exceed stack limits (vanilla logic)
+                    int newCount = output.getCount() + recipeOutput.getCount();
+                    if (newCount <= output.getMaxStackSize()) {
+                        canPlace = true;
+                        break;
+                    }
+                }
+            }
+            if (!canPlace) {
+                return false;
+            }
+        }
+        
+        // Check fluid outputs
+        for (int i = 0; i < recipeOutputFluids.size(); i++) {
+            FluidStack recipeOutput = recipeOutputFluids.get(i);
+            boolean canPlace = false;
+            for (FluidStorageCoFH tank : outputTanks()) {
+                FluidStack output = tank.getFluidStack();
+                if (output.isEmpty()) {
+                    canPlace = true;
+                    break;
+                } else if (fluidsEqual(output, recipeOutput)) {
+                    if (tank.getSpace() >= recipeOutput.getAmount()) {
+                        canPlace = true;
+                        break;
+                    }
+                }
+            }
+            if (!canPlace) {
+                return false;
+            }
+        }
+        
+        return true;
     }
     // endregion
 

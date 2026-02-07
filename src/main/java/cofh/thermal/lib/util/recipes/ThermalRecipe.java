@@ -31,7 +31,7 @@ public abstract class ThermalRecipe extends SerializableRecipe {
 
         if ((inputItems == null || inputItems.isEmpty()) && (inputFluids == null || inputFluids.isEmpty())
                 || (outputItems == null || outputItems.isEmpty()) && (outputFluids == null || outputFluids.isEmpty())) {
-            ThermalCore.LOG.warn("Invalid Thermal Series recipe! Please check your datapacks!");
+            // ThermalCore.LOG.warn("Invalid Thermal Series recipe! Please check your datapacks!");
         }
         this.energy = energy;
         this.xp = Math.max(0.0F, xp);

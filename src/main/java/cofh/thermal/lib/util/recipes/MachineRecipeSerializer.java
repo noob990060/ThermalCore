@@ -103,7 +103,7 @@ public class MachineRecipeSerializer<T extends ThermalRecipe> implements RecipeS
             experience = json.get(XP).getAsFloat();
         }
         if (inputItems.isEmpty() && inputFluids.isEmpty() || outputItems.isEmpty() && outputFluids.isEmpty() || energy <= 0) {
-            throw new JsonSyntaxException("Invalid Thermal Series recipe! Please check your datapacks!");
+            // ThermalCore.LOG.warn("Invalid Thermal Series recipe! Please check your datapacks!");
         }
         return factory.create(energy, experience, inputItems, inputFluids, outputItems, outputItemChances, outputFluids);
     }
@@ -147,7 +147,7 @@ public class MachineRecipeSerializer<T extends ThermalRecipe> implements RecipeS
             outputFluids.add(FluidStack.STREAM_CODEC.decode(buffer));
         }
         if (inputItems.isEmpty() && inputFluids.isEmpty() || outputItems.isEmpty() && outputFluids.isEmpty()) {
-            throw new JsonSyntaxException("Invalid Thermal Series recipe! Please check your datapacks!");
+            // ThermalCore.LOG.warn("Invalid Thermal Series recipe! Please check your datapacks!");
         }
         return factory.create(energy, experience, inputItems, inputFluids, outputItems, outputItemChances, outputFluids);
     }

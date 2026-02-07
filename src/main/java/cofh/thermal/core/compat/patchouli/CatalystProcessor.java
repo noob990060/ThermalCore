@@ -1,6 +1,6 @@
 package cofh.thermal.core.compat.patchouli;
 
-import cofh.lib.util.Utils;
+
 import cofh.thermal.core.util.managers.machine.InsolatorRecipeManager;
 import cofh.thermal.core.util.managers.machine.PulverizerRecipeManager;
 import cofh.thermal.core.util.managers.machine.SmelterRecipeManager;
@@ -62,7 +62,7 @@ public class CatalystProcessor implements IComponentProcessor {
                         case "enable":
                             return IVariable.wrap(true);
                         case "item":
-                            return IVariable.wrap(Utils.getRegistryName(catalyst.getItem()).toString());
+                            return IVariable.from(catalyst, level.registryAccess());
                         case "p":
                             return IVariable.wrap(manager.getCatalyst(catalyst).getPrimaryMod());
                         case "s":

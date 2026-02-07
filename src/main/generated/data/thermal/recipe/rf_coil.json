@@ -1,0 +1,20 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "category":  "misc",
+    "key":  {
+                "I":  {
+                          "tag":  "c:ingots/gold"
+                      },
+                "R":  {
+                          "tag":  "c:dusts/redstone"
+                      }
+            },
+    "pattern":  [
+                    "  R",
+                    " I ",
+                    "R  "
+                ],
+    "result":  {
+                   "id":  "thermal:rf_coil"
+               }
+}

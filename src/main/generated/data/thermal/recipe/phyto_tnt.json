@@ -1,0 +1,26 @@
+{
+    "neoforge:conditions":  [
+                                {
+                                    "type":  "cofh_core:flag_set",
+                                    "flag":  "thermal:phytogro_explosives"
+                                }
+                            ],
+    "type":  "minecraft:crafting_shaped",
+    "category":  "equipment",
+    "key":  {
+                "G":  {
+                          "tag":  "c:gunpowder"
+                      },
+                "P":  {
+                          "item":  "thermal:phytogro"
+                      }
+            },
+    "pattern":  [
+                    "GPG",
+                    "PGP",
+                    "GPG"
+                ],
+    "result":  {
+                   "id":  "thermal:phyto_tnt"
+               }
+}

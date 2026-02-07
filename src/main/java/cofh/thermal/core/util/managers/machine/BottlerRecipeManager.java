@@ -91,6 +91,9 @@ public class BottlerRecipeManager extends AbstractManager implements IRecipeMana
 
     public void addRecipe(ThermalRecipe recipe) {
 
+        for (var input : recipe.getInputItems()) {
+            input.ingredient().itemStacks = null;
+        }
         if (!recipe.getInputItems().isEmpty()) {
             for (ItemStack recipeInput : recipe.getInputItems().get(0).getItems()) {
                 for (FluidStack fluidInput : recipe.getInputFluids().get(0).getFluids()) {

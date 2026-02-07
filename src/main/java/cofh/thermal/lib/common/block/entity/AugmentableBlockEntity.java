@@ -539,7 +539,7 @@ public abstract class AugmentableBlockEntity extends BlockEntityCoFH
 
         enchantments = nbt.getList(TAG_ENCHANTMENTS, TAG_COMPOUND);
 
-        inventory.read(nbt);
+        inventory.read(nbt, lookupProvider);
 
         if (nbt.contains(TAG_AUGMENTS)) {
             inventory.readSlotsUnordered(nbt.getList(TAG_AUGMENTS, TAG_COMPOUND), invSize() - augSize());
@@ -547,8 +547,8 @@ public abstract class AugmentableBlockEntity extends BlockEntityCoFH
         updateAugmentState();
 
         tankInv.read(nbt);
-        energyStorage.read(nbt);
-        xpStorage.read(nbt);
+        getEnergyStorage().read(nbt);
+        getXpStorage().read(nbt);
         filter.read(nbt, lookupProvider);
 
         securityControl.read(nbt);
@@ -573,7 +573,7 @@ public abstract class AugmentableBlockEntity extends BlockEntityCoFH
 
         nbt.put(TAG_ENCHANTMENTS, enchantments);
 
-        inventory.write(nbt);
+        inventory.write(nbt, lookupProvider);
         tankInv.write(nbt);
         getEnergyStorage().write(nbt);
         getXpStorage().write(nbt);
@@ -881,11 +881,11 @@ public abstract class AugmentableBlockEntity extends BlockEntityCoFH
         markChunkUnsaved();
     }
 
-    // @Override
-    // public void onTankChanged(int tank) {
-    //
-    // markChunkUnsaved();
-    // }
+    @Override
+    public void onTankChanged(int tank) {
+
+        markChunkUnsaved();
+    }
 
     @Override
     public void onControlUpdate() {

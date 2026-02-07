@@ -1,0 +1,7 @@
+{
+  "type": "thermal:numismatic_fuel",
+  "ingredient": {
+    "tag": "c:coins/copper"
+  },
+  "energy": 32000
+}

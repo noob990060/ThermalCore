@@ -47,6 +47,9 @@ public class PressRecipeManager extends AbstractManager implements IRecipeManage
 
     public void addRecipe(ThermalRecipe recipe) {
 
+        for (var input : recipe.getInputItems()) {
+            input.ingredient().itemStacks = null;
+        }
         if (recipe.getInputItems().size() == 1) {
             for (ItemStack recipeInput : recipe.getInputItems().get(0).getItems()) {
                 addRecipe(recipe.getEnergy(), recipe.getXp(), Collections.singletonList(recipeInput), Collections.emptyList(), recipe.getOutputItems(), recipe.getOutputItemChances(), recipe.getOutputFluids());

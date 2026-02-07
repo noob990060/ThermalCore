@@ -1,0 +1,63 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "category":  "misc",
+    "ingredients":  [
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/tin"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/tin"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/tin"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/tin"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/tin"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/tin"
+                                             }
+                                         ]
+                        },
+                        {
+                            "type":  "neoforge:compound",
+                            "children":  [
+                                             {
+                                                 "tag":  "c:dusts/silver"
+                                             },
+                                             {
+                                                 "tag":  "c:ingots/silver"
+                                             }
+                                         ]
+                        },
+                        {
+                            "tag":  "c:dusts/glowstone"
+                        },
+                        {
+                            "tag":  "c:dusts/glowstone"
+                        },
+                        {
+                            "item":  "minecraft:fire_charge"
+                        }
+                    ],
+    "result":  {
+                   "count":  4,
+                   "id":  "thermal:lumium_ingot"
+               }
+}
