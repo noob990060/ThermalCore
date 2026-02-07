@@ -5,12 +5,12 @@ plugins {
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'com.modrinth.minotaur' version "2.+"
 
-    id 'net.neoforged.gradle.userdev' version '7.0.97'
+    id 'net.neoforged.gradle.userdev' version '7.0.171'
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
     withSourcesJar()
     // withJavadocJar()
@@ -102,9 +102,17 @@ repositories {
     maven { url 'https://maven.theillusivec4.top/' }
 }
 
+def useLocalProjects = (project.findProperty("useLocalProjects")?.toString()?.toBoolean())
+        ?: (rootProject.findProject(":CoFHCore") != null)
+
 dependencies {
     implementation("net.neoforged:neoforge:${neo_version}")
-    implementation "com.teamcofh:cofh_core:${mc_version}-${cofh_core_version}+"
+
+    if (useLocalProjects) {
+        implementation project(":CoFHCore")
+    } else {
+        implementation("com.teamcofh:cofh_core:${mc_version}-${cofh_core_version}+")
+    }
 
     implementation("mezz.jei:jei-${mc_version}-neoforge:${jei_version}") {
         transitive false

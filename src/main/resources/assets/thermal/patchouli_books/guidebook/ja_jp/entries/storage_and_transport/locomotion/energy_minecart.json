@@ -1,10 +1,9 @@
 {
   "name": "RFトロッコ",
-  "icon": "thermal:energy_minecart",
+  "icon": "thermal:energy_cell",
   "read_by_default": true,
   "flag": "mod:thermal_locomotion",
   "category": "thermal:locomotion",
-
   "pages": [
     {
       "type": "patchouli:text",
@@ -24,6 +23,5 @@
       "title": "対応オーグメント",
       "text": "$(li)$(l:thermal:technology/augments/integral_components)統合コンポーネント$(/l)$(li)$(l:thermal:technology/augments/rf_coil)拡張RFコイル$(/l)$(li)$(l:thermal:technology/augments/rf_coil_storage)安定RFコイル$(/l)$(li)$(l:thermal:technology/augments/rf_coil_xfer)高フラックスRFコイル$(/l)"
     }
-
   ]
 }

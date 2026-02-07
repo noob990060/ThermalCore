@@ -16,6 +16,7 @@ import cofh.thermal.lib.util.recipes.MachineProperties;
 import cofh.thermal.lib.util.recipes.internal.IMachineRecipe;
 import cofh.thermal.lib.util.recipes.internal.IRecipeCatalyst;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
@@ -489,9 +490,9 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
 
     // region NBT
     @Override
-    public void load(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.load(nbt);
+        super.loadAdditional(nbt, lookupProvider);
 
         wasActive = nbt.getBoolean(TAG_ACTIVE_PREV);
 
@@ -501,9 +502,9 @@ public abstract class MachineBlockEntity extends Reconfigurable4WayBlockEntity i
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookupProvider);
 
         nbt.putBoolean(TAG_ACTIVE_PREV, wasActive);
 

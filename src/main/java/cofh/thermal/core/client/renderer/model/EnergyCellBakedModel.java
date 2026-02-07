@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.minecraft.core.component.DataComponents;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -63,9 +64,11 @@ public class EnergyCellBakedModel extends BakedModelWrapper<BakedModel> implemen
 
     @Override
     @Nonnull
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand,
+            @Nonnull ModelData extraData, @Nullable RenderType renderType) {
 
-        LinkedList<BakedQuad> quads = new LinkedList<>(originalModel.getQuads(state, side, rand, extraData, renderType));
+        LinkedList<BakedQuad> quads = new LinkedList<>(
+                originalModel.getQuads(state, side, rand, extraData, renderType));
         if (side == null || quads.isEmpty()) {
             return quads;
         }
@@ -118,9 +121,12 @@ public class EnergyCellBakedModel extends BakedModelWrapper<BakedModel> implemen
 
         @Nullable
         @Override
-        public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel worldIn, @Nullable LivingEntity entityIn, int seed) {
+        public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel worldIn,
+                @Nullable LivingEntity entityIn, int seed) {
 
-            CompoundTag tag = stack.getTagElement(TAG_BLOCK_ENTITY);
+            CompoundTag tag = stack.has(DataComponents.CUSTOM_DATA)
+                    ? stack.get(DataComponents.CUSTOM_DATA).copyTag().getCompound(TAG_BLOCK_ENTITY)
+                    : null;
             byte[] sideConfigRaw = getSideConfigRaw(tag);
             int itemHash = new ComparableItemStack(stack).hashCode();
             int level = getLevel(stack);
@@ -131,19 +137,26 @@ public class EnergyCellBakedModel extends BakedModelWrapper<BakedModel> implemen
                 ModelUtils.WrappedBakedModelBuilder builder = new ModelUtils.WrappedBakedModelBuilder(model);
 
                 // FACE
-                builder.addFaceQuad(NORTH, new RetexturedBakedQuad(builder.getQuads(NORTH).get(0), getLevelTexture(level)));
+                builder.addFaceQuad(NORTH,
+                        new RetexturedBakedQuad(builder.getQuads(NORTH).get(0), getLevelTexture(level)));
 
                 // SIDES
                 BakedQuad[] cachedQuads = ITEM_QUAD_CACHE.get(configHash);
                 if (cachedQuads == null || cachedQuads.length < 6) {
                     cachedQuads = new BakedQuad[6];
 
-                    cachedQuads[0] = new RetexturedBakedQuad(builder.getQuads(DOWN).get(0), getConfigTexture(sideConfigRaw[0]));
-                    cachedQuads[1] = new RetexturedBakedQuad(builder.getQuads(UP).get(0), getConfigTexture(sideConfigRaw[1]));
-                    cachedQuads[2] = new RetexturedBakedQuad(builder.getQuads(NORTH).get(0), getConfigTexture(sideConfigRaw[2]));
-                    cachedQuads[3] = new RetexturedBakedQuad(builder.getQuads(SOUTH).get(0), getConfigTexture(sideConfigRaw[3]));
-                    cachedQuads[4] = new RetexturedBakedQuad(builder.getQuads(WEST).get(0), getConfigTexture(sideConfigRaw[4]));
-                    cachedQuads[5] = new RetexturedBakedQuad(builder.getQuads(EAST).get(0), getConfigTexture(sideConfigRaw[5]));
+                    cachedQuads[0] = new RetexturedBakedQuad(builder.getQuads(DOWN).get(0),
+                            getConfigTexture(sideConfigRaw[0]));
+                    cachedQuads[1] = new RetexturedBakedQuad(builder.getQuads(UP).get(0),
+                            getConfigTexture(sideConfigRaw[1]));
+                    cachedQuads[2] = new RetexturedBakedQuad(builder.getQuads(NORTH).get(0),
+                            getConfigTexture(sideConfigRaw[2]));
+                    cachedQuads[3] = new RetexturedBakedQuad(builder.getQuads(SOUTH).get(0),
+                            getConfigTexture(sideConfigRaw[3]));
+                    cachedQuads[4] = new RetexturedBakedQuad(builder.getQuads(WEST).get(0),
+                            getConfigTexture(sideConfigRaw[4]));
+                    cachedQuads[5] = new RetexturedBakedQuad(builder.getQuads(EAST).get(0),
+                            getConfigTexture(sideConfigRaw[5]));
                     ITEM_QUAD_CACHE.put(configHash, cachedQuads);
                 }
                 builder.addFaceQuad(DOWN, cachedQuads[0]);

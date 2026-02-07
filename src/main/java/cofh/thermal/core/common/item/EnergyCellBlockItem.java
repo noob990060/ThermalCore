@@ -6,14 +6,15 @@ import cofh.lib.common.energy.EnergyStorageCoFH;
 import cofh.thermal.core.common.block.entity.storage.EnergyCellBlockEntity;
 import cofh.thermal.lib.common.item.BlockItemAugmentable;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Block;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.core.util.helpers.AugmentableHelper.getPropertyWithDefault;
@@ -32,7 +33,7 @@ public class EnergyCellBlockItem extends BlockItemAugmentable implements IEnergy
     }
 
     @Override
-    protected void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    protected void tooltipDelegate(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
         boolean creative = isCreative(stack, ENERGY);
         if (getMaxEnergyStored(stack) > 0) {
@@ -40,19 +41,26 @@ public class EnergyCellBlockItem extends BlockItemAugmentable implements IEnergy
                     ? getTextComponent(localize("info.cofh.energy") + ": ").append(getTextComponent("info.cofh.infinite").withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC))
                     : getTextComponent(localize("info.cofh.energy") + ": " + getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " " + localize("info.cofh.unit_rf")));
         }
-        addEnergyTooltip(stack, worldIn, tooltip, flagIn, getExtract(stack), getReceive(stack), creative);
+        addEnergyTooltip(stack, null, tooltip, flagIn, getExtract(stack), getReceive(stack), creative);
+
+        super.tooltipDelegate(stack, context, tooltip, flagIn);
     }
 
     protected void setAttributesFromAugment(ItemStack container, CompoundTag augmentData) {
 
-        CompoundTag subTag = container.getTagElement(TAG_PROPERTIES);
-        if (subTag == null) {
+        CompoundTag nbt = container.has(DataComponents.CUSTOM_DATA) 
+                ? container.get(DataComponents.CUSTOM_DATA).copyTag()
+                : new CompoundTag();
+        CompoundTag subTag = nbt.getCompound(TAG_PROPERTIES);
+        if (subTag.isEmpty()) {
             return;
         }
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_BASE_MOD);
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_RF_STORAGE);
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_RF_XFER);
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_RF_CREATIVE);
+        nbt.put(TAG_PROPERTIES, subTag);
+        container.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
     }
 
     //    @Override
@@ -65,11 +73,16 @@ public class EnergyCellBlockItem extends BlockItemAugmentable implements IEnergy
     @Override
     public CompoundTag getOrCreateEnergyTag(ItemStack container) {
 
-        CompoundTag blockTag = container.getOrCreateTagElement(TAG_BLOCK_ENTITY);
+        CompoundTag nbt = container.has(DataComponents.CUSTOM_DATA) 
+                ? container.get(DataComponents.CUSTOM_DATA).copyTag()
+                : new CompoundTag();
+        CompoundTag blockTag = nbt.getCompound(TAG_BLOCK_ENTITY);
         if (!blockTag.contains(TAG_ENERGY_MAX)) {
             new EnergyStorageCoFH(EnergyCellBlockEntity.BASE_CAPACITY, EnergyCellBlockEntity.BASE_RECV, EnergyCellBlockEntity.BASE_SEND).writeWithParams(blockTag);
         }
-        return container.getOrCreateTagElement(TAG_BLOCK_ENTITY);
+        nbt.put(TAG_BLOCK_ENTITY, blockTag);
+        container.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
+        return blockTag;
     }
 
     @Override
@@ -100,7 +113,10 @@ public class EnergyCellBlockItem extends BlockItemAugmentable implements IEnergy
     @Override
     public void updateAugmentState(ItemStack container, List<ItemStack> augments) {
 
-        container.getOrCreateTag().put(TAG_PROPERTIES, new CompoundTag());
+        CompoundTag nbt = container.has(DataComponents.CUSTOM_DATA) 
+                ? container.get(DataComponents.CUSTOM_DATA).copyTag()
+                : new CompoundTag();
+        nbt.put(TAG_PROPERTIES, new CompoundTag());
         for (ItemStack augment : augments) {
             CompoundTag augmentData = AugmentDataHelper.getAugmentData(augment);
             if (augmentData == null) {
@@ -108,6 +124,7 @@ public class EnergyCellBlockItem extends BlockItemAugmentable implements IEnergy
             }
             setAttributesFromAugment(container, augmentData);
         }
+        container.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
         int energyExcess = getEnergyStored(container) - getMaxEnergyStored(container);
         if (energyExcess > 0) {
             setEnergyStored(container, getMaxEnergyStored(container));

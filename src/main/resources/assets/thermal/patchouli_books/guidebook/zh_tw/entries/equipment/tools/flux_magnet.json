@@ -1,6 +1,6 @@
 {
   "name": "通量磁鐵",
-  "icon": "thermal:flux_magnet",
+  "icon": "thermal:rf_potato",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_innovation",

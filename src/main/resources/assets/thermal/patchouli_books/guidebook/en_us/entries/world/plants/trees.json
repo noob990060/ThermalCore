@@ -1,6 +1,6 @@
 {
   "name": "Trees",
-  "icon": "thermal:rubberwood_sapling",
+  "icon": "thermal:sawdust",
   "read_by_default": true,
   "flag": "mod:thermal_foundation",
   "category": "thermal:plants",
@@ -11,12 +11,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Rubberwood Tree",
       "A.item1": "thermal:rubberwood_sapling",
       "A.item2": "thermal:rubberwood_leaves",
       "A.text": "To acquire a sapling, find a Wandering Trader.",
-
       "B.title": "Rubberwood",
       "B.item1": "thermal:rubberwood_log",
       "B.item2": "thermal:stripped_rubberwood_log",

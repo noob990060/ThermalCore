@@ -17,10 +17,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -29,8 +31,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-import javax.annotation.Nullable;
+import java.util.UUID;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static cofh.core.common.config.CoreCommonConfig.returnDismantleDrops;
 import static cofh.core.init.CoreMobEffects.WRENCHED;
@@ -38,25 +41,26 @@ import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class WrenchItem extends ItemCoFH implements IMultiModeItem {
 
-    private final Multimap<Attribute, AttributeModifier> toolAttributes;
+    private final Multimap<Holder<Attribute>, AttributeModifier> toolAttributes;
 
     public WrenchItem(Properties builder) {
 
         super(builder);
 
-        ImmutableMultimap.Builder<Attribute, AttributeModifier> multimap = ImmutableMultimap.builder();
-        multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 0.0D, AttributeModifier.Operation.ADDITION));
+        ImmutableMultimap.Builder<Holder<Attribute>, AttributeModifier> multimap = ImmutableMultimap.builder();
+        // TODO: Fix AttributeModifier for 1.21.1
+        // multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A45DB5CF"), "Tool modifier", 0.0D));
 
         this.toolAttributes = multimap.build();
     }
 
     @Override
-    protected void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    protected void tooltipDelegate(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
         tooltip.add(getTextComponent("info.thermal.wrench.mode." + getMode(stack)).withStyle(ChatFormatting.ITALIC));
-        addModeChangeTooltip(this, stack, worldIn, tooltip, flagIn);
+        addModeChangeTooltip(this, stack, null, tooltip, flagIn);
 
-        super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        super.tooltipDelegate(stack, context, tooltip, flagIn);
     }
 
     protected boolean useDelegate(ItemStack stack, UseOnContext context) {
@@ -90,10 +94,8 @@ public class WrenchItem extends ItemCoFH implements IMultiModeItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        target.addEffect(new MobEffectInstance(WRENCHED.get(), 60, 0, false, false));
-        stack.hurtAndBreak(1, attacker, (entity) -> {
-            entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-        });
+        target.addEffect(new MobEffectInstance(WRENCHED, 60, 0, false, false));
+        stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
         return true;
     }
 
@@ -117,8 +119,7 @@ public class WrenchItem extends ItemCoFH implements IMultiModeItem {
         return player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), stack) && useDelegate(stack, context) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
 
         return slot == EquipmentSlot.MAINHAND ? this.toolAttributes : ImmutableMultimap.of();
     }

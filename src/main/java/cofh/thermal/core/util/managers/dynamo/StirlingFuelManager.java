@@ -9,6 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import cofh.lib.util.crafting.IngredientWithCount;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -69,7 +70,11 @@ public class StirlingFuelManager extends SingleItemFuelManager {
         if (stack.getItem().hasCraftingRemainingItem(stack)) {
             return 0;
         }
-        int energy = stack.getBurnTime(null) * RF_PER_FURNACE_UNIT;
+        int burnTime = stack.getBurnTime(null);
+        if (burnTime < 0) {
+            return 0;
+        }
+        int energy = burnTime * RF_PER_FURNACE_UNIT;
         return energy >= MIN_ENERGY ? energy : 0;
     }
 
@@ -78,9 +83,9 @@ public class StirlingFuelManager extends SingleItemFuelManager {
     public void refresh(RecipeManager recipeManager) {
 
         clear();
-        var recipes = recipeManager.byType(STIRLING_FUEL.get());
-        for (var entry : recipes.entrySet()) {
-            addFuel(entry.getValue().value());
+        var recipes = recipeManager.getAllRecipesFor(STIRLING_FUEL.get());
+        for (var recipe : recipes) {
+            addFuel(recipe.value());
         }
         createConvertedRecipes(recipeManager);
     }
@@ -111,7 +116,7 @@ public class StirlingFuelManager extends SingleItemFuelManager {
 
     protected RecipeHolder<StirlingFuel> convert(ItemStack item, int energy) {
 
-        return new RecipeHolder<>(new ResourceLocation(ID_THERMAL, "stirling_" + getName(item)), new StirlingFuel(energy, singletonList(Ingredient.of(item)), emptyList()));
+        return new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath(ID_THERMAL, "stirling_" + getName(item)), new StirlingFuel(energy, singletonList(new IngredientWithCount(Ingredient.of(item), 1)), emptyList()));
     }
     // endregion
 }

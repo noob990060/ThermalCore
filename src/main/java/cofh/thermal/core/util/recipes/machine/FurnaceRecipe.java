@@ -6,6 +6,7 @@ import cofh.thermal.core.util.managers.machine.FurnaceRecipeManager;
 import cofh.thermal.lib.util.recipes.ThermalRecipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import cofh.lib.util.crafting.IngredientWithCount;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -22,7 +23,7 @@ import static cofh.thermal.core.init.registries.TCoreRecipeTypes.FURNACE_RECIPE;
 
 public class FurnaceRecipe extends ThermalRecipe {
 
-    public FurnaceRecipe(int energy, float experience, @Nullable List<Ingredient> inputItems, @Nullable List<FluidIngredient> inputFluids, @Nullable List<ItemStack> outputItems, @Nullable List<Float> outputItemChances, @Nullable List<FluidStack> outputFluids) {
+    public FurnaceRecipe(int energy, float experience, @Nullable List<IngredientWithCount> inputItems, @Nullable List<FluidIngredient> inputFluids, @Nullable List<ItemStack> outputItems, @Nullable List<Float> outputItemChances, @Nullable List<FluidStack> outputFluids) {
 
         super(energy, experience, inputItems, inputFluids, outputItems, outputItemChances, outputFluids);
 
@@ -35,7 +36,7 @@ public class FurnaceRecipe extends ThermalRecipe {
 
     public FurnaceRecipe(int energy, float experience, AbstractCookingRecipe recipe) {
 
-        this(energy, experience, recipe.getIngredients(), Collections.emptyList(), Collections.singletonList(recipe.result), Collections.singletonList(BASE_CHANCE_LOCKED), Collections.emptyList());
+        this(energy, experience, wrapIngredients(recipe.getIngredients()), Collections.emptyList(), Collections.singletonList(recipe.result), Collections.singletonList(BASE_CHANCE_LOCKED), Collections.emptyList());
     }
 
     @Nonnull
@@ -52,4 +53,12 @@ public class FurnaceRecipe extends ThermalRecipe {
         return FURNACE_RECIPE.get();
     }
 
+    private static List<IngredientWithCount> wrapIngredients(List<Ingredient> ingredients) {
+
+        return ingredients.stream()
+                .map(ingredient -> new IngredientWithCount(ingredient, 1))
+                .toList();
+    }
+
 }
+

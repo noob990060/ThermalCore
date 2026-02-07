@@ -11,13 +11,13 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class LockItem extends ItemCoFH implements IPlacementItem {
@@ -28,8 +28,9 @@ public class LockItem extends ItemCoFH implements IPlacementItem {
     }
 
     @Override
-    protected void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    protected void tooltipDelegate(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
+        super.tooltipDelegate(stack, context, tooltip, flagIn);
     }
 
     protected boolean useDelegate(ItemStack stack, UseOnContext context) {

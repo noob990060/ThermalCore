@@ -20,6 +20,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 
@@ -85,9 +86,20 @@ public class TreeExtractorCategory implements IRecipeCategory<RecipeHolder<TreeE
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<TreeExtractorMapping> recipe, IFocusGroup focuses) {
-        //TODO Hek
-        List<ItemStack> trunk = recipe.value().getTrunk().getBlockStates().stream().map(state -> state.getBlock().asItem()).distinct().map(ItemStack::new).toList();
-        List<ItemStack> leaves = recipe.value().getLeaves().getBlockStates().stream().map(state -> state.getBlock().asItem()).distinct().map(ItemStack::new).toList();
+        List<ItemStack> trunk = recipe.value().getTrunk().getBlockStates().stream()
+                .map(state -> {
+                    Block block = state.getBlock();
+                    return block.asItem().getDefaultInstance();
+                })
+                .distinct()
+                .toList();
+        List<ItemStack> leaves = recipe.value().getLeaves().getBlockStates().stream()
+                .map(state -> {
+                    Block block = state.getBlock();
+                    return block.asItem().getDefaultInstance();
+                })
+                .distinct()
+                .toList();
 
         builder.addSlot(RecipeIngredientRole.INPUT, 35, 41).addItemStacks(trunk);
         builder.addSlot(RecipeIngredientRole.INPUT, 35, 23).addItemStacks(trunk);

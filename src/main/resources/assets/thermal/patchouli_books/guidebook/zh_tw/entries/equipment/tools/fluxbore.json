@@ -1,6 +1,6 @@
 {
   "name": "通量電鑽",
-  "icon": "thermal:flux_drill",
+  "icon": "thermal:rf_potato",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_innovation",

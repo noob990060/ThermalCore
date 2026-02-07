@@ -5,7 +5,7 @@ import cofh.thermal.core.ThermalCore;
 import cofh.thermal.core.util.managers.machine.CentrifugeRecipeManager;
 import cofh.thermal.lib.util.recipes.ThermalRecipe;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import cofh.lib.util.crafting.IngredientWithCount;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -18,7 +18,7 @@ import static cofh.thermal.core.init.registries.TCoreRecipeTypes.CENTRIFUGE_RECI
 
 public class CentrifugeRecipe extends ThermalRecipe {
 
-    public CentrifugeRecipe(int energy, float experience, List<Ingredient> inputItems, List<FluidIngredient> inputFluids, List<ItemStack> outputItems, List<Float> outputItemChances, List<FluidStack> outputFluids) {
+    public CentrifugeRecipe(int energy, float experience, List<IngredientWithCount> inputItems, List<FluidIngredient> inputFluids, List<ItemStack> outputItems, List<Float> outputItemChances, List<FluidStack> outputFluids) {
 
         super(energy, experience, inputItems, inputFluids, outputItems, outputItemChances, outputFluids);
 
@@ -44,3 +44,4 @@ public class CentrifugeRecipe extends ThermalRecipe {
     }
 
 }
+

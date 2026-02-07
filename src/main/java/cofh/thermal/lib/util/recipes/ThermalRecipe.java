@@ -1,10 +1,10 @@
 package cofh.thermal.lib.util.recipes;
 
 import cofh.lib.common.fluid.FluidIngredient;
+import cofh.lib.util.crafting.IngredientWithCount;
 import cofh.lib.util.recipes.SerializableRecipe;
 import cofh.thermal.core.ThermalCore;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import static cofh.lib.util.Constants.BASE_CHANCE_LOCKED;
 
 public abstract class ThermalRecipe extends SerializableRecipe {
 
-    protected final List<Ingredient> inputItems = new ArrayList<>();
+    protected final List<IngredientWithCount> inputItems = new ArrayList<>();
     protected final List<FluidIngredient> inputFluids = new ArrayList<>();
 
     protected final List<ItemStack> outputItems = new ArrayList<>();
@@ -26,9 +26,11 @@ public abstract class ThermalRecipe extends SerializableRecipe {
 
     protected boolean catalyzable;
 
-    protected ThermalRecipe(int energy, float xp, List<Ingredient> inputItems, List<FluidIngredient> inputFluids, List<ItemStack> outputItems, List<Float> outputItemChances, List<FluidStack> outputFluids) {
+    protected ThermalRecipe(int energy, float xp, List<IngredientWithCount> inputItems, List<FluidIngredient> inputFluids,
+            List<ItemStack> outputItems, List<Float> outputItemChances, List<FluidStack> outputFluids) {
 
-        if ((inputItems == null || inputItems.isEmpty()) && (inputFluids == null || inputFluids.isEmpty()) || (outputItems == null || outputItems.isEmpty()) && (outputFluids == null || outputFluids.isEmpty())) {
+        if ((inputItems == null || inputItems.isEmpty()) && (inputFluids == null || inputFluids.isEmpty())
+                || (outputItems == null || outputItems.isEmpty()) && (outputFluids == null || outputFluids.isEmpty())) {
             ThermalCore.LOG.warn("Invalid Thermal Series recipe! Please check your datapacks!");
         }
         this.energy = energy;
@@ -63,7 +65,7 @@ public abstract class ThermalRecipe extends SerializableRecipe {
 
     private void trim() {
 
-        ((ArrayList<Ingredient>) this.inputItems).trimToSize();
+        ((ArrayList<IngredientWithCount>) this.inputItems).trimToSize();
         ((ArrayList<FluidIngredient>) this.inputFluids).trimToSize();
 
         ((ArrayList<ItemStack>) this.outputItems).trimToSize();
@@ -72,7 +74,7 @@ public abstract class ThermalRecipe extends SerializableRecipe {
     }
 
     // region GETTERS
-    public List<Ingredient> getInputItems() {
+    public List<IngredientWithCount> getInputItems() {
 
         return inputItems;
     }
@@ -112,4 +114,10 @@ public abstract class ThermalRecipe extends SerializableRecipe {
         return catalyzable;
     }
     // endregion
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return true;
+    }
+
 }

@@ -1,6 +1,6 @@
 {
   "name": "フラックスソー",
-  "icon": "thermal:flux_saw",
+  "icon": "thermal:rf_potato",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_innovation",

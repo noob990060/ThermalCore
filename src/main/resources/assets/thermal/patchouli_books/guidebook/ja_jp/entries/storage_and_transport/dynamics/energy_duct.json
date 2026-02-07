@@ -1,10 +1,9 @@
 {
   "name": "フラックスダクト",
-  "icon": "thermal:energy_duct",
+  "icon": "thermal:energy_cell",
   "read_by_default": true,
   "flag": "mod:thermal_dynamics",
   "category": "thermal:ducts",
-
   "pages": [
     {
       "type": "patchouli:text",

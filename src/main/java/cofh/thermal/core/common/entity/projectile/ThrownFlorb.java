@@ -68,8 +68,8 @@ public class ThrownFlorb extends ThrowableItemProjectile {
     @Override
     protected void onHit(HitResult result) {
 
-        //        System.out.println(result.location);
-        //        System.out.println(BlockPos.containing(result.location));
+        // System.out.println(result.location);
+        // System.out.println(BlockPos.containing(result.location));
 
         if (!level.isClientSide) {
             FluidStack fluid = getFluid(getItem());
@@ -82,7 +82,9 @@ public class ThrownFlorb extends ThrowableItemProjectile {
                 } else if (result instanceof EntityHitResult entityHitResult) {
                     hitPos = entityHitResult.getEntity().getOnPos();
                 }
-                FluidActionResult actionResult = FluidUtil.tryPlaceFluid(getOwner() instanceof Player player ? player : null, this.level, MAIN_HAND, hitPos.relative(hitDir), getItem(), new FluidStack(getFluid(getItem()), BUCKET_VOLUME));
+                FluidActionResult actionResult = FluidUtil.tryPlaceFluid(
+                        getOwner() instanceof Player player ? player : null, this.level, MAIN_HAND,
+                        hitPos.relative(hitDir), getItem(), new FluidStack(getFluid(getItem()).getFluid(), BUCKET_VOLUME));
             }
             this.level.broadcastEntityEvent(this, (byte) 3);
             this.discard();
@@ -93,9 +95,12 @@ public class ThrownFlorb extends ThrowableItemProjectile {
     public void handleEntityEvent(byte event) {
 
         if (event == 3) {
-            // level.addParticle(new CylindricalParticleOptions(BLAST_WAVE.get(), radius * 2.0F, radius * 3.0F, 2.5F), this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+            // level.addParticle(new CylindricalParticleOptions(BLAST_WAVE.get(), radius *
+            // 2.0F, radius * 3.0F, 2.5F), this.getX(), this.getY(), this.getZ(), 0, 0, 0);
             level.addParticle(ParticleTypes.BUBBLE_POP, this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
-            level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+            level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS,
+                    0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F,
+                    false);
         } else {
             super.handleEntityEvent(event);
         }
@@ -107,7 +112,7 @@ public class ThrownFlorb extends ThrowableItemProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
 
         return gravity;
     }
@@ -115,11 +120,13 @@ public class ThrownFlorb extends ThrowableItemProjectile {
     // region HELPERS
     public static FluidStack getFluid(ItemStack container) {
 
-        CompoundTag tag = container.getOrCreateTag();
-        if (!tag.contains(TAG_FLUID)) {
-            return FluidStack.EMPTY;
+        // Try to get the fluid using the FluidUtil approach which should be more compatible
+        net.neoforged.neoforge.fluids.capability.IFluidHandler cap = FluidUtil.getFluidHandler(container).orElse(null);
+        if (cap != null) {
+            FluidStack fluid = cap.getFluidInTank(0);
+            return fluid != null ? fluid : FluidStack.EMPTY;
         }
-        return FluidStack.loadFluidStackFromNBT(tag.getCompound(TAG_FLUID));
+        return FluidStack.EMPTY;
     }
     // endregion
 }

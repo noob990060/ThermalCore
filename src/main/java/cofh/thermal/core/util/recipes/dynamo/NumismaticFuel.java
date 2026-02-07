@@ -5,7 +5,7 @@ import cofh.lib.util.helpers.MathHelper;
 import cofh.thermal.core.ThermalCore;
 import cofh.thermal.core.util.managers.dynamo.NumismaticFuelManager;
 import cofh.thermal.lib.util.recipes.ThermalFuel;
-import net.minecraft.world.item.crafting.Ingredient;
+import cofh.lib.util.crafting.IngredientWithCount;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -18,7 +18,7 @@ import static cofh.thermal.core.init.registries.TCoreRecipeTypes.NUMISMATIC_FUEL
 
 public class NumismaticFuel extends ThermalFuel {
 
-    public NumismaticFuel(int energy, @Nullable List<Ingredient> inputItems, @Nullable List<FluidIngredient> inputFluids) {
+    public NumismaticFuel(int energy, @Nullable List<IngredientWithCount> inputItems, @Nullable List<FluidIngredient> inputFluids) {
 
         super(energy, inputItems, inputFluids);
 
@@ -46,3 +46,4 @@ public class NumismaticFuel extends ThermalFuel {
     }
 
 }
+

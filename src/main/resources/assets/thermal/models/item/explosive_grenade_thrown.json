@@ -1,5 +1,5 @@
 {
-  "parent": "thermal:item/explosive_grenade",
+  "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "thermal:item/explosive_grenade_thrown"
   }

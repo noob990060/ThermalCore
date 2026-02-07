@@ -16,3 +16,6 @@ pluginManagement {
         maven { url 'https://maven.parchmentmc.org/' }
     }
 }
+
+include(":CoFHCore")
+project(":CoFHCore").projectDir = file("../CoFHCore")

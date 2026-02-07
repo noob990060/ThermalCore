@@ -1,6 +1,6 @@
 {
   "name": "Crops",
-  "icon": "thermal:barley",
+  "icon": "thermal:apple_block",
   "read_by_default": true,
   "flag": "mod:thermal_cultivation",
   "category": "thermal:plants",
@@ -11,12 +11,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Amaranth",
       "A.item1": "thermal:amaranth",
       "A.item2": "thermal:amaranth_seeds",
       "A.text": "A vibrant grain packed with nutrients and alchemical properties.",
-
       "B.title": "Barley",
       "B.item1": "thermal:barley",
       "B.item2": "thermal:barley_seeds",
@@ -24,12 +22,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Corn",
       "A.item1": "thermal:corn",
       "A.item2": "thermal:corn_seeds",
       "A.text": "A staple grain prized for its versatility.",
-
       "B.title": "Flax",
       "B.item1": "thermal:flax",
       "B.item2": "thermal:flax_seeds",
@@ -37,12 +33,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Onion",
       "A.item1": "thermal:onion",
       "A.item2": "thermal:onion_seeds",
       "A.text": "A bulbous vegetable that is often used to add flavor to a savory dish. Brings people to tears.",
-
       "B.title": "Radish",
       "B.item1": "thermal:radish",
       "B.item2": "thermal:radish_seeds",
@@ -50,12 +44,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Rice",
       "A.item1": "thermal:rice",
       "A.item2": "thermal:rice_seeds",
       "A.text": "The most widely consumed staple grain in the world. Laborious to harvest.",
-
       "B.title": "Sadiroot",
       "B.item1": "thermal:sadiroot",
       "B.item2": "thermal:sadiroot_seeds",
@@ -63,7 +55,6 @@
     },
     {
       "type": "2_item_page",
-
       "title": "Spinach",
       "item1": "thermal:spinach",
       "item2": "thermal:spinach_seeds",
@@ -71,12 +62,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Bell Pepper",
       "A.item1": "thermal:bell_pepper",
       "A.item2": "thermal:bell_pepper_seeds",
       "A.text": "A cultivar of peppers without the spice. Commonly chopped and used in dishes.",
-
       "B.title": "Eggplant",
       "B.item1": "thermal:eggplant",
       "B.item2": "thermal:eggplant_seeds",
@@ -84,12 +73,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Green Bean",
       "A.item1": "thermal:green_bean",
       "A.item2": "thermal:green_bean_seeds",
       "A.text": "The immature seed pods of a bean plant. Can be consumed alone or cooked in various dishes.",
-
       "B.title": "Peanut",
       "B.item1": "thermal:peanut",
       "B.item2": "thermal:peanut_seeds",
@@ -97,12 +84,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Strawberry",
       "A.item1": "thermal:strawberry",
       "A.item2": "thermal:strawberry_seeds",
       "A.text": "A sweet, red fruit used in a variety of condiments and desserts.",
-
       "B.title": "Tomato",
       "B.item1": "thermal:tomato",
       "B.item2": "thermal:tomato_seeds",
@@ -110,12 +95,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Coffee",
       "A.item1": "thermal:coffee",
       "A.item2": "thermal:coffee_seeds",
       "A.text": "The fruit of a coffee tree, known as a cherry. The pit (bean) can be roasted, ground, and brewed a delicious beverage.",
-
       "B.title": "Tea",
       "B.item1": "thermal:tea",
       "B.item2": "thermal:tea_seeds",
@@ -123,12 +106,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Hops",
       "A.item1": "thermal:hops",
       "A.item2": "thermal:hops_seeds",
       "A.text": "The seed cones of a flowering hop vine. Used to flavor beer.",
-
       "B.title": "Frost Melon",
       "B.item1": "thermal:frost_melon_slice",
       "B.item2": "thermal:frost_melon_seeds",
@@ -136,12 +117,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Fluxtooth",
       "A.item1": "minecraft:redstone",
       "A.item2": "thermal:redstone_mushroom_spores",
       "A.text": "A pale mushroom that exudes a viscous, redstone-like emulsion when mature.",
-
       "B.title": "Glimmercap",
       "B.item1": "minecraft:glowstone_dust",
       "B.item2": "thermal:glowstone_mushroom_spores",
@@ -149,12 +128,10 @@
     },
     {
       "type": "2-2_item_page",
-
       "A.title": "Boomshroom",
       "A.item1": "minecraft:gunpowder",
       "A.item2": "thermal:gunpowder_mushroom_spores",
       "A.text": "A temperamental mushroom that grows webs of explosive material on its underside.",
-
       "B.title": "Slitake",
       "B.item1": "minecraft:slime_ball",
       "B.item2": "thermal:slime_mushroom_spores",

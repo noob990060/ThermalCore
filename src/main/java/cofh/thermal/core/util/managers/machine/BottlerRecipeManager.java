@@ -21,6 +21,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import cofh.lib.util.crafting.IngredientWithCount;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -203,9 +204,9 @@ public class BottlerRecipeManager extends AbstractManager implements IRecipeMana
     public void refresh(RecipeManager recipeManager) {
 
         clear();
-        var recipes = recipeManager.byType(BOTTLER_RECIPE.get());
-        for (var entry : recipes.entrySet()) {
-            addRecipe(entry.getValue().value());
+        var recipes = recipeManager.getAllRecipesFor(BOTTLER_RECIPE.get());
+        for (var recipe : recipes) {
+            addRecipe(recipe.value());
         }
 
         int energy = (int) (getDefaultEnergy() * getDefaultScale());
@@ -278,9 +279,9 @@ public class BottlerRecipeManager extends AbstractManager implements IRecipeMana
 
     protected BottlerRecipeNBT convert(int energy, float experience, @Nonnull ItemStack inputItem, @Nonnull FluidStack inputFluid, @Nonnull ItemStack outputItem) {
 
-        convertedRecipes.add(new RecipeHolder<>(new ResourceLocation(ID_THERMAL, "bottler_" + getName(outputItem)),
+        convertedRecipes.add(new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath(ID_THERMAL, "bottler_" + getName(outputItem)),
                 new BottlerRecipe(energy, experience,
-                        singletonList(Ingredient.of(inputItem)),
+                        singletonList(new IngredientWithCount(Ingredient.of(inputItem), 1)),
                         singletonList(FluidIngredient.of(inputFluid).setAmount(inputFluid.getAmount())),
                         singletonList(outputItem),
                         emptyList(),

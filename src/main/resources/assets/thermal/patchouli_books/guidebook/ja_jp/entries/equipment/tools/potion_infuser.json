@@ -1,6 +1,6 @@
 {
   "name": "ポーション注射器",
-  "icon": "thermal:potion_infuser",
+  "icon": "thermal:phytogro",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_innovation",

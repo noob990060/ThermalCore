@@ -1,6 +1,6 @@
 {
   "name": "通量電容",
-  "icon": "thermal:flux_capacitor",
+  "icon": "thermal:rf_potato",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_innovation",

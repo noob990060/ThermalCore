@@ -1,6 +1,6 @@
 {
   "name": "食物",
-  "icon": "thermal:pbj_sandwich",
+  "icon": "thermal:apple_block",
   "read_by_default": true,
   "flag": "mod:thermal_cultivation",
   "category": "thermal:plants",

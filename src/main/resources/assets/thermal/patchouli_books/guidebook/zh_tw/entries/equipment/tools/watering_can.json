@@ -1,6 +1,6 @@
 {
   "name": "灑水壺",
-  "icon": "thermal:watering_can",
+  "icon": "thermal:phytogro",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_cultivation",

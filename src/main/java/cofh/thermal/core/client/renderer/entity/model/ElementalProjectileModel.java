@@ -1,6 +1,8 @@
 package cofh.thermal.core.client.renderer.entity.model;
 
-import net.minecraft.client.model.HierarchicalModel;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,9 +13,9 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-public class ElementalProjectileModel<T extends Entity> extends HierarchicalModel<T> {
+public class ElementalProjectileModel<T extends Entity> extends EntityModel<T> {
 
-    public static final ModelLayerLocation PROJECTILE_LAYER = new ModelLayerLocation(new ResourceLocation("thermal:elemental_projectile"), "main");
+    public static final ModelLayerLocation PROJECTILE_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("thermal", "elemental_projectile"), "main");
 
     protected final ModelPart root;
     protected final ModelPart cube;
@@ -38,16 +40,15 @@ public class ElementalProjectileModel<T extends Entity> extends HierarchicalMode
     }
 
     @Override
-    public ModelPart root() {
-
-        return this.root;
-    }
-
-    @Override
     public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
         this.cube.yRot = netHeadYaw * ((float) Math.PI / 180F);
         this.cube.xRot = headPitch * ((float) Math.PI / 180F);
+    }
+
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        this.cube.render(poseStack, buffer, packedLight, packedOverlay, color);
     }
 
 }

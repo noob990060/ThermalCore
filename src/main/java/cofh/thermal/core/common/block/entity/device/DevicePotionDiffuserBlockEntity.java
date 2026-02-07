@@ -14,6 +14,7 @@ import cofh.thermal.core.common.inventory.device.DevicePotionDiffuserMenu;
 import cofh.thermal.core.util.managers.device.PotionDiffuserManager;
 import cofh.thermal.lib.common.block.entity.DeviceBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
@@ -25,15 +26,20 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +55,8 @@ import static cofh.thermal.core.init.registries.TCoreBlockEntities.DEVICE_POTION
 import static cofh.thermal.lib.util.ThermalAugmentRules.createAllowValidator;
 
 public class DevicePotionDiffuserBlockEntity extends DeviceBlockEntity implements ITickableTile, IAreaEffectTile {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DevicePotionDiffuserBlockEntity.class);
 
     public static final BiPredicate<ItemStack, List<ItemStack>> AUG_VALIDATOR = createAllowValidator(TAG_AUGMENT_TYPE_UPGRADE, TAG_AUGMENT_TYPE_FLUID, TAG_AUGMENT_TYPE_AREA_EFFECT, TAG_AUGMENT_TYPE_FILTER, TAG_AUGMENT_TYPE_POTION);
 
@@ -158,9 +166,9 @@ public class DevicePotionDiffuserBlockEntity extends DeviceBlockEntity implement
 
     // region NETWORK
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
 
-        super.onDataPacket(net, pkt);
+        super.onDataPacket(net, pkt, lookupProvider);
 
         if (level != null) {
             level.getModelDataManager().requestRefresh(this);
@@ -231,9 +239,9 @@ public class DevicePotionDiffuserBlockEntity extends DeviceBlockEntity implement
 
     // region NBT
     @Override
-    public void load(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.load(nbt);
+        super.loadAdditional(nbt, lookupProvider);
 
         boostCycles = nbt.getInt(TAG_BOOST_CYCLES);
         boostMax = nbt.getInt(TAG_BOOST_MAX);
@@ -247,9 +255,9 @@ public class DevicePotionDiffuserBlockEntity extends DeviceBlockEntity implement
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookupProvider);
 
         nbt.putInt(TAG_BOOST_CYCLES, boostCycles);
         nbt.putInt(TAG_BOOST_MAX, boostMax);
@@ -286,9 +294,19 @@ public class DevicePotionDiffuserBlockEntity extends DeviceBlockEntity implement
                 cached = false;
             }
         } else if (!cached) {
-            effects = PotionUtils.getAllEffects(inputTank.getFluidStack().getTag());
+            FluidStack fluidStack = inputTank.getFluidStack();
+            PotionContents potionContents = fluidStack.get(DataComponents.POTION_CONTENTS);
+            if (potionContents != null) {
+                List<MobEffectInstance> effectList = new ArrayList<>();
+                for (MobEffectInstance effect : potionContents.getAllEffects()) {
+                    effectList.add(effect);
+                }
+                effects = effectList;
+            } else {
+                effects = Collections.emptyList();
+            }
             for (MobEffectInstance effect : effects) {
-                instant |= effect.getEffect().isInstantenous();
+                instant |= effect.getEffect().value().isInstantenous();
             }
             cached = true;
         }
@@ -323,8 +341,8 @@ public class DevicePotionDiffuserBlockEntity extends DeviceBlockEntity implement
         for (LivingEntity target : targets) {
             if (target.isAffectedByPotions()) {
                 for (MobEffectInstance effect : effects) {
-                    if (effect.getEffect().isInstantenous()) {
-                        effect.getEffect().applyInstantenousEffect(null, null, target, getEffectAmplifier(effect), 0.5D);
+                    if (effect.getEffect().value().isInstantenous()) {
+                        effect.getEffect().value().applyInstantenousEffect(null, null, target, getEffectAmplifier(effect), 0.5D);
                     } else {
                         MobEffectInstance potion = new MobEffectInstance(effect.getEffect(), getEffectDuration(effect), getEffectAmplifier(effect), effect.isAmbient(), effect.isVisible());
                         target.addEffect(potion);

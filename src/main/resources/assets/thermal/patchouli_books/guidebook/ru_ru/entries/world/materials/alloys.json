@@ -1,6 +1,6 @@
 {
   "name": "Сплавы",
-  "icon": "thermal:bronze_ingot",
+  "icon": "thermal:niter",
   "read_by_default": true,
   "category": "thermal:materials",
   "pages": [
@@ -13,11 +13,9 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "Бронза",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_bronze",
       "A.text": "Рассвет новой эры.",
-
       "B.title": "Инвар",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_invar",
       "B.text": "Минимально расширяется при нагревании."
@@ -25,11 +23,9 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "Электрум",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_electrum",
       "A.text": "Лучшее из обоих миров.",
-
       "B.title": "Константан",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_constantan",
       "B.text": "Минимально изменяет сопротивление при нагреве."
@@ -37,11 +33,9 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "Люмий",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_lumium",
       "A.text": "Кирпич из твёрдого солнечного света.",
-
       "B.title": "Сигналий",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_signalum",
       "B.text": "Проводит ток лучше, чем серебро."
@@ -49,12 +43,10 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "3_alloy_page",
-
       "title": "Эндерий",
       "recipe": "thermal:machines/smelter/smelter_alloy_enderium",
       "text": "Резонирует на любой частоте."
     },
-
     {
       "flag": "!mod:thermal_expansion",
       "type": "patchouli:text",

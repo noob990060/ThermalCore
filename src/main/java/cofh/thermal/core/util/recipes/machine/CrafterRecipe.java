@@ -7,6 +7,7 @@ import cofh.thermal.lib.util.recipes.internal.BaseMachineRecipe;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
+import cofh.lib.util.crafting.IngredientWithCount;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.material.Fluid;
@@ -26,7 +27,7 @@ import static cofh.thermal.lib.util.managers.AbstractManager.makeComparable;
 
 public class CrafterRecipe extends BaseMachineRecipe {
 
-    protected final List<Ingredient> ingredients;
+    protected final List<IngredientWithCount> ingredients;
     protected final Set<ComparableItemStack> validItems = new ObjectOpenHashSet<>();
     protected Set<Fluid> validFluids = new ObjectOpenHashSet<>();
 
@@ -37,9 +38,9 @@ public class CrafterRecipe extends BaseMachineRecipe {
 
         super(energy, 0);
 
-        ingredients = recipe.getIngredients();
+        ingredients = wrapIngredients(recipe.getIngredients());
 
-        for (Ingredient ing : ingredients) {
+        for (IngredientWithCount ing : ingredients) {
             for (ItemStack stack : ing.getItems()) {
                 validItems.add(makeComparable(stack));
                 if (stack.hasCraftingRemainingItem()) {
@@ -88,7 +89,7 @@ public class CrafterRecipe extends BaseMachineRecipe {
 
         if (storedFluidAmount > 0) {
             FluidStack storedFluid = inventory.inputTanks().get(0).getFluidStack();
-            for (Ingredient ing : ingredients) {
+            for (IngredientWithCount ing : ingredients) {
                 if (ing.isEmpty()) {
                     ++found;
                 } else {
@@ -116,7 +117,7 @@ public class CrafterRecipe extends BaseMachineRecipe {
                 }
             }
         } else {
-            for (Ingredient ing : ingredients) {
+            for (IngredientWithCount ing : ingredients) {
                 if (ing.isEmpty()) {
                     ++found;
                 } else {
@@ -146,4 +147,12 @@ public class CrafterRecipe extends BaseMachineRecipe {
         return Pair.of(itemCounts, fluidCounts);
     }
 
+    private static List<IngredientWithCount> wrapIngredients(List<Ingredient> ingredients) {
+
+        return ingredients.stream()
+                .map(ingredient -> new IngredientWithCount(ingredient, 1))
+                .toList();
+    }
+
 }
+

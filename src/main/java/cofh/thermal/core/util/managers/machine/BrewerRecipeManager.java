@@ -6,6 +6,7 @@ import cofh.lib.api.fluid.IFluidStackHolder;
 import cofh.lib.api.inventory.IItemStackHolder;
 import cofh.lib.common.fluid.FluidIngredient;
 import cofh.lib.util.crafting.ComparableItemStack;
+import cofh.lib.util.crafting.IngredientWithCount;
 import cofh.thermal.core.ThermalCore;
 import cofh.thermal.core.util.recipes.machine.BrewerRecipe;
 import cofh.thermal.lib.util.managers.AbstractManager;
@@ -151,9 +152,9 @@ public class BrewerRecipeManager extends AbstractManager implements IRecipeManag
     public void refresh(RecipeManager recipeManager) {
 
         clear();
-        var recipes = recipeManager.byType(BREWER_RECIPE.get());
-        for (var entry : recipes.entrySet()) {
-            addRecipe(entry.getValue().value());
+        var recipes = recipeManager.getAllRecipesFor(BREWER_RECIPE.get());
+        for (var recipe : recipes) {
+            addRecipe(recipe.value());
         }
 
         if (defaultPotionRecipes) {
@@ -177,9 +178,10 @@ public class BrewerRecipeManager extends AbstractManager implements IRecipeManag
 
     protected void createConvertedRecipes() {
 
-        for (PotionBrewing.Mix<Potion> mix : PotionBrewing.POTION_MIXES) {
-            createConvertedRecipe(mix.from, mix.ingredient, mix.to);
-        }
+        // TODO: Fix potion brewing API access for 1.21.1
+        // The PotionBrewing.POTION_MIXES field is no longer available
+        // Need to access the PotionBrewing instance through the server or find alternative approach
+        ThermalCore.LOG.debug("Skipping default Brewing Stand recipes due to API changes in 1.21.1");
     }
 
     protected boolean createConvertedRecipe(Potion inputPotion, Ingredient reagent, Potion outputPotion) {
@@ -193,9 +195,9 @@ public class BrewerRecipeManager extends AbstractManager implements IRecipeManag
 
     protected RecipeHolder<BrewerRecipe> convert(Potion inputPotion, Ingredient reagent, Potion outputPotion) {
 
-        return new RecipeHolder<>(new ResourceLocation(ID_THERMAL, "brewer_" + inputPotion.hashCode()),
+        return new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath(ID_THERMAL, "brewer_" + inputPotion.hashCode()),
                 new BrewerRecipe(defaultEnergy, 0.0F,
-                        Collections.singletonList(reagent),
+                        Collections.singletonList(new IngredientWithCount(reagent, 1)),
                         Collections.singletonList(FluidIngredient.of(PotionFluid.getPotionAsFluid(defaultPotion, inputPotion))),
                         Collections.emptyList(), Collections.emptyList(),
                         Collections.singletonList(PotionFluid.getPotionAsFluid(defaultPotion, outputPotion))));

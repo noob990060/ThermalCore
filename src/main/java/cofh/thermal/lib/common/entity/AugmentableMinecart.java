@@ -13,7 +13,9 @@ import cofh.lib.common.inventory.ItemStorageCoFH;
 import cofh.lib.common.inventory.SimpleItemInv;
 import cofh.lib.util.Utils;
 import cofh.thermal.core.common.config.ThermalCoreConfig;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -26,6 +28,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.component.CustomData;
+import java.util.HashMap;
+import java.util.Optional;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -78,11 +88,11 @@ public abstract class AugmentableMinecart extends AbstractMinecartCoFH implement
 
         super.onPlaced(stack);
 
-        CompoundTag nbt = stack.getTag();
+        CompoundTag nbt = stack.has(DataComponents.CUSTOM_DATA) 
+                ? stack.get(DataComponents.CUSTOM_DATA).copyTag().getCompound(TAG_AUGMENTS)
+                : null;
         if (nbt != null) {
-            if (nbt.contains(TAG_AUGMENTS)) {
-                inventory.readSlotsUnordered(nbt.getList(TAG_AUGMENTS, TAG_COMPOUND), invSize() - augSize());
-            }
+            inventory.readSlotsUnordered(nbt.getList(TAG_AUGMENTS, TAG_COMPOUND), invSize() - augSize());
         }
         updateAugmentState();
 
@@ -92,7 +102,9 @@ public abstract class AugmentableMinecart extends AbstractMinecartCoFH implement
     @Override
     public ItemStack createItemStackTag(ItemStack stack) {
 
-        CompoundTag nbt = stack.getOrCreateTag();
+        CompoundTag nbt = stack.has(DataComponents.CUSTOM_DATA) 
+                ? stack.get(DataComponents.CUSTOM_DATA).copyTag()
+                : new CompoundTag();
 
         if (ThermalCoreConfig.keepAugments.get() && augSize() > 0) {
             getItemInv().writeSlotsToNBTUnordered(nbt, TAG_AUGMENTS, invSize() - augSize());
@@ -100,7 +112,10 @@ public abstract class AugmentableMinecart extends AbstractMinecartCoFH implement
                 List<ItemStack> items = getAugmentsAsList();
                 augmentableItem.updateAugmentState(stack, items);
             }
-            filter.write(nbt);
+            filter.write(nbt, level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY);
+        }
+        if (!nbt.isEmpty()) {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
         }
         return super.createItemStackTag(stack);
     }
@@ -116,7 +131,7 @@ public abstract class AugmentableMinecart extends AbstractMinecartCoFH implement
             inventory.readSlotsUnordered(compound.getList(TAG_AUGMENTS, TAG_COMPOUND), invSize() - augSize());
         }
         updateAugmentState();
-        filter.read(compound);
+        filter.read(compound, level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY);
     }
 
     @Override
@@ -127,7 +142,7 @@ public abstract class AugmentableMinecart extends AbstractMinecartCoFH implement
         compound.put(TAG_ENCHANTMENTS, enchantments);
 
         inventory.write(compound);
-        filter.write(compound);
+        filter.write(compound, level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY);
     }
 
     // region HELPERS
@@ -194,7 +209,7 @@ public abstract class AugmentableMinecart extends AbstractMinecartCoFH implement
             }
             setAttributesFromAugment(augmentData);
         }
-        finalizeAttributes(EnchantmentHelper.deserializeEnchantments(enchantments));
+        finalizeAttributes(deserializeEnchantments(enchantments));
         augmentNBT = null;
     }
 
@@ -233,6 +248,38 @@ public abstract class AugmentableMinecart extends AbstractMinecartCoFH implement
     }
 
     protected abstract void finalizeAttributes(Map<Enchantment, Integer> enchantmentMap);
+    
+    private Map<Enchantment, Integer> deserializeEnchantments(ListTag enchantmentTag) {
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+        if (enchantmentTag == null || enchantmentTag.isEmpty()) {
+            return enchantments;
+        }
+        
+        RegistryAccess registryAccess = level != null ? level.registryAccess() : null;
+        if (registryAccess == null) {
+            return enchantments;
+        }
+        
+        for (int i = 0; i < enchantmentTag.size(); i++) {
+            CompoundTag tag = enchantmentTag.getCompound(i);
+            String enchantId = tag.getString("id");
+            int level = tag.getInt("lvl");
+            
+            // Convert the enchantment ID to the actual enchantment
+            ResourceLocation enchantmentKey = ResourceLocation.tryParse(enchantId);
+            if (enchantmentKey != null) {
+                ResourceKey<Enchantment> enchantmentResourceKey = ResourceKey.create(Registries.ENCHANTMENT, enchantmentKey);
+                Optional<Holder.Reference<Enchantment>> enchantmentHolder = registryAccess
+                    .lookupOrThrow(Registries.ENCHANTMENT)
+                    .get(enchantmentResourceKey);
+                
+                if (enchantmentHolder.isPresent()) {
+                    enchantments.put(enchantmentHolder.get().value(), level);
+                }
+            }
+        }
+        return enchantments;
+    }
     // endregion
 
     // region IStorageCallback

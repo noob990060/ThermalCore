@@ -1,6 +1,7 @@
 package cofh.thermal.core.common.entity.projectile;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -23,12 +24,12 @@ public abstract class ElementalProjectile extends AbstractHurtingProjectile {
 
     public ElementalProjectile(EntityType<? extends AbstractHurtingProjectile> type, LivingEntity shooter, double accelX, double accelY, double accelZ, Level world) {
 
-        super(type, shooter, accelX, accelY, accelZ, world);
+        super(type, shooter, new Vec3(accelX, accelY, accelZ), world);
     }
 
     public ElementalProjectile(EntityType<? extends AbstractHurtingProjectile> type, double x, double y, double z, double accelX, double accelY, double accelZ, Level world) {
 
-        super(type, x, y, z, accelX, accelY, accelZ, world);
+        super(type, x, y, z, new Vec3(accelX, accelY, accelZ), world);
     }
 
     @Override
@@ -44,7 +45,8 @@ public abstract class ElementalProjectile extends AbstractHurtingProjectile {
             }
             baseTick();
             if (shouldBurn()) {
-                setSecondsOnFire(1);
+                // Using access transformer to set remainingFireTicks field
+                remainingFireTicks = 20; // 1 second = 20 ticks
             }
             HitResult entityResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if (entityResult.getType() != HitResult.Type.MISS && !EventHooks.onProjectileImpact(this, entityResult)) {
@@ -62,7 +64,7 @@ public abstract class ElementalProjectile extends AbstractHurtingProjectile {
                 resistance = getWaterInertia();
             }
             level.addParticle(getTrailParticle(), pos.x, pos.y, pos.z, 0.0D, 0.0D, 0.0D);
-            setDeltaMovement(velocity.add(xPower, yPower, zPower).scale(resistance));
+            setDeltaMovement(velocity.add(velocity.normalize().scale(accelerationPower)).scale(resistance));
             setPos(pos.x + velocity.x, pos.y + velocity.y, pos.z + velocity.z);
         } else {
             discard();
@@ -82,7 +84,7 @@ public abstract class ElementalProjectile extends AbstractHurtingProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
 
     }
 

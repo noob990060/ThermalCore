@@ -7,10 +7,13 @@ import cofh.core.util.control.RedstoneControlModule;
 import cofh.core.util.control.SecurityControlModule;
 import cofh.thermal.core.common.config.ThermalCoreConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -29,7 +32,9 @@ public class LogisticsBlockEntity extends BlockEntityCoFH implements ISecurableT
     @Override
     public ItemStack createItemStackTag(ItemStack stack) {
 
-        CompoundTag nbt = stack.getOrCreateTagElement(TAG_BLOCK_ENTITY);
+        CompoundTag nbt = stack.has(DataComponents.CUSTOM_DATA) 
+                ? stack.get(DataComponents.CUSTOM_DATA).copyTag().getCompound(TAG_BLOCK_ENTITY)
+                : new CompoundTag();
         if (hasSecurity()) {
             securityControl().write(nbt);
         }
@@ -37,25 +42,29 @@ public class LogisticsBlockEntity extends BlockEntityCoFH implements ISecurableT
             redstoneControl().writeSettings(nbt);
         }
         if (!nbt.isEmpty()) {
-            stack.addTagElement(TAG_BLOCK_ENTITY, nbt);
+            CompoundTag baseTag = stack.has(DataComponents.CUSTOM_DATA) 
+                    ? stack.get(DataComponents.CUSTOM_DATA).copyTag()
+                    : new CompoundTag();
+            baseTag.put(TAG_BLOCK_ENTITY, nbt);
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(baseTag));
         }
         return super.createItemStackTag(stack);
     }
 
     // region NBT
     @Override
-    public void load(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.load(nbt);
+        super.loadAdditional(nbt, lookupProvider);
 
         securityControl.read(nbt);
         redstoneControl.read(nbt);
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookupProvider);
 
         securityControl.write(nbt);
         redstoneControl.write(nbt);

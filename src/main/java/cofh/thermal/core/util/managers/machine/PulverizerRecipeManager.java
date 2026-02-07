@@ -1,6 +1,7 @@
 package cofh.thermal.core.util.managers.machine;
 
 import cofh.lib.util.crafting.ComparableItemStack;
+import cofh.lib.util.crafting.IngredientWithCount;
 import cofh.thermal.core.ThermalCore;
 import cofh.thermal.core.util.recipes.machine.PulverizerRecipe;
 import cofh.thermal.lib.util.managers.SingleItemRecipeManager;
@@ -90,17 +91,17 @@ public class PulverizerRecipeManager extends SingleItemRecipeManager.Catalyzed {
     public void refresh(RecipeManager recipeManager) {
 
         clear();
-        var recipes = recipeManager.byType(PULVERIZER_RECIPE.get());
-        for (var entry : recipes.entrySet()) {
-            addRecipe(entry.getValue().value());
+        var recipes = recipeManager.getAllRecipesFor(PULVERIZER_RECIPE.get());
+        for (var entry : recipes) {
+            addRecipe(entry.value());
         }
-        var recycle = recipeManager.byType(PULVERIZER_RECYCLE_RECIPE.get());
-        for (var entry : recycle.entrySet()) {
-            addRecipe(entry.getValue().value(), BaseMachineRecipe.RecipeType.DISENCHANT);
+        var recycle = recipeManager.getAllRecipesFor(PULVERIZER_RECYCLE_RECIPE.get());
+        for (var entry : recycle) {
+            addRecipe(entry.value(), BaseMachineRecipe.RecipeType.DISENCHANT);
         }
-        var catalysts = recipeManager.byType(PULVERIZER_CATALYST.get());
-        for (var entry : catalysts.entrySet()) {
-            addCatalyst(entry.getValue().value());
+        var catalysts = recipeManager.getAllRecipesFor(PULVERIZER_CATALYST.get());
+        for (var entry : catalysts) {
+            addCatalyst(entry.value());
         }
 
         if (defaultFurnaceRecipes) {
@@ -141,7 +142,7 @@ public class PulverizerRecipeManager extends SingleItemRecipeManager.Catalyzed {
 
     protected void createConvertedRecipes(RecipeManager recipeManager) {
 
-        for (var recipe : recipeManager.byType(RecipeType.BLASTING).values()) {
+        for (var recipe : recipeManager.getAllRecipesFor(RecipeType.BLASTING)) {
             getConversionIngredients(recipe.value());
         }
         for (var ingredientSet : conversionIngredients.entrySet()) {
@@ -204,9 +205,9 @@ public class PulverizerRecipeManager extends SingleItemRecipeManager.Catalyzed {
 
     protected RecipeHolder<PulverizerRecipe> convertIngot(Ingredient input, Ingredient dust) {
 
-        return new RecipeHolder<>(new ResourceLocation(ID_THERMAL, "pulverizer_ingot_" + input.hashCode()),
+        return new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath(ID_THERMAL, "pulverizer_ingot_" + input.hashCode()),
                 new PulverizerRecipe(getDefaultEnergy() / 2, 0.0F,
-                        Collections.singletonList(input),
+                        Collections.singletonList(new IngredientWithCount(input, 1)),
                         Collections.emptyList(), // no fluid input
                         Collections.singletonList(cloneStack(dust.getItems()[0], 1)),
                         List.of(-1.0F), // output chances
@@ -215,9 +216,9 @@ public class PulverizerRecipeManager extends SingleItemRecipeManager.Catalyzed {
 
     protected RecipeHolder<PulverizerRecipe> convertOre(Ingredient input, Ingredient dust) {
 
-        return new RecipeHolder<>(new ResourceLocation(ID_THERMAL, "pulverizer_ore_" + input.hashCode()),
+        return new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath(ID_THERMAL, "pulverizer_ore_" + input.hashCode()),
                 new PulverizerRecipe(getDefaultEnergy(), 0.2F,
-                        Collections.singletonList(input),
+                        Collections.singletonList(new IngredientWithCount(input, 1)),
                         Collections.emptyList(), // no fluid input
                         Arrays.asList(cloneStack(dust.getItems()[0], 1), new ItemStack(Blocks.GRAVEL)),
                         Arrays.asList(2.0F, 0.2F), // output chances
@@ -226,9 +227,9 @@ public class PulverizerRecipeManager extends SingleItemRecipeManager.Catalyzed {
 
     protected RecipeHolder<PulverizerRecipe> convertRaw(Ingredient input, Ingredient dust) {
 
-        return new RecipeHolder<>(new ResourceLocation(ID_THERMAL, "pulverizer_raw_" + input.hashCode()),
+        return new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath(ID_THERMAL, "pulverizer_raw_" + input.hashCode()),
                 new PulverizerRecipe(getDefaultEnergy(), 0.1F,
-                        Collections.singletonList(input),
+                        Collections.singletonList(new IngredientWithCount(input, 1)),
                         Collections.emptyList(), // no fluid input
                         Collections.singletonList(cloneStack(dust.getItems()[0], 1)),
                         List.of(1.25F), // output chances

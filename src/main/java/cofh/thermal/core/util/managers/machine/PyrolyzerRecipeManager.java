@@ -26,9 +26,9 @@ public class PyrolyzerRecipeManager extends SingleItemRecipeManager {
     public void refresh(RecipeManager recipeManager) {
 
         clear();
-        var recipes = recipeManager.byType(PYROLYZER_RECIPE.get());
-        for (var entry : recipes.entrySet()) {
-            addRecipe(entry.getValue().value());
+        var recipes = recipeManager.getAllRecipesFor(PYROLYZER_RECIPE.get());
+        for (var recipe : recipes) {
+            addRecipe(recipe.value());
         }
     }
     // endregion

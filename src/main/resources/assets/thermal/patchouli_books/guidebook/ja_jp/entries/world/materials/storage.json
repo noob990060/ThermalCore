@@ -1,6 +1,6 @@
 {
   "name": "素材の保管",
-  "icon": "thermal:invar_block",
+  "icon": "thermal:niter_block",
   "read_by_default": true,
   "category": "thermal:materials",
   "pages": [

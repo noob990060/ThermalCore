@@ -6,8 +6,9 @@ import cofh.core.util.helpers.FluidHelper;
 import cofh.lib.util.helpers.MathHelper;
 import cofh.lib.util.helpers.StringHelper;
 import cofh.thermal.core.common.entity.projectile.ThrownFlorb;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
-import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,14 +17,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -32,7 +34,7 @@ import static cofh.core.util.helpers.FluidHelper.addPotionTooltip;
 import static cofh.core.util.helpers.ItemHelper.cloneStack;
 import static cofh.lib.util.helpers.StringHelper.*;
 
-public class FlorbItem extends FluidContainerItem {
+public class FlorbItem extends FluidContainerItem implements ProjectileItem {
 
     protected static int cooldown = 0;
 
@@ -43,11 +45,11 @@ public class FlorbItem extends FluidContainerItem {
 
         ProxyUtils.registerColorable(this);
 
-        DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
+        DispenserBlock.registerBehavior(this, new ProjectileDispenseBehavior(this));
     }
 
     @Override
-    protected void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    protected void tooltipDelegate(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
         FluidStack fluid = getFluid(stack);
         if (!fluid.isEmpty()) {
@@ -58,13 +60,15 @@ public class FlorbItem extends FluidContainerItem {
             tooltip.add(getTextComponent(localize("info.cofh.effects") + ":"));
             addPotionTooltip(fluid, tooltip);
         }
+
+        super.tooltipDelegate(stack, context, tooltip, flagIn);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
         List<Component> additionalTooltips = new ArrayList<>();
-        tooltipDelegate(stack, worldIn, additionalTooltips, flagIn);
+        tooltipDelegate(stack, context, additionalTooltips, flagIn);
         tooltip.addAll(additionalTooltips);
 
         //        if (SecurityHelper.isItemClaimable(stack)) {
@@ -136,24 +140,19 @@ public class FlorbItem extends FluidContainerItem {
     }
     // endregion
 
-    // region DISPENSER BEHAVIOR
-    private static final AbstractProjectileDispenseBehavior DISPENSER_BEHAVIOR = new AbstractProjectileDispenseBehavior() {
+    // region ProjectileItem
+    @Override
+    public Projectile asProjectile(Level level, Position position, ItemStack stack, Direction direction) {
+        ThrownFlorb florb = new ThrownFlorb(level, position.x(), position.y(), position.z());
+        ItemStack throwStack = cloneStack(stack, 1);
+        throwStack.setDamageValue(1);
+        florb.setItem(throwStack);
+        return florb;
+    }
 
-        @Override
-        public Projectile getProjectile(Level worldIn, Position position, ItemStack stackIn) {
-
-            ThrownFlorb florb = new ThrownFlorb(worldIn, position.x(), position.y(), position.z());
-            ItemStack throwStack = cloneStack(stackIn, 1);
-            throwStack.setDamageValue(1);
-            florb.setItem(throwStack);
-            return florb;
-        }
-
-        @Override
-        protected float getUncertainty() {
-
-            return 3.0F;
-        }
-    };
+    @Override
+    public ProjectileItem.DispenseConfig createDispenseConfig() {
+        return ProjectileItem.DispenseConfig.DEFAULT;
+    }
     // endregion
 }

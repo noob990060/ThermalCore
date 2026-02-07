@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[${lang_version},)"
+loaderVersion = "[4,)"
 issueTrackerURL = "https://github.com/cofh/feedback"
 license = "CoFH - Don't Be A Jerk (Learn, Don't Steal)"
 
@@ -21,7 +21,7 @@ Contains all of the common components for the Thermal Series, such as materials 
 [[dependencies.thermal]]
 modId = "minecraft"
 type = "required"
-versionRange = "1.20.4"
+versionRange = "[${mc_version},]"
 ordering = "AFTER"
 side = "BOTH"
 
@@ -34,7 +34,7 @@ side = "BOTH"
 
 [[dependencies.thermal]]
 modId = "cofh_core"
-required = true
+type = "required"
 versionRange = "${cofh_core_version_range}"
 ordering = "AFTER"
 side = "BOTH"

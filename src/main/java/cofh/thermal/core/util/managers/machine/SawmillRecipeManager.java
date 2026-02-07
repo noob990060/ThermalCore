@@ -1,5 +1,6 @@
 package cofh.thermal.core.util.managers.machine;
 
+import cofh.lib.util.crafting.IngredientWithCount;
 import cofh.thermal.core.ThermalCore;
 import cofh.thermal.core.util.recipes.machine.SawmillRecipe;
 import cofh.thermal.lib.util.managers.SingleItemRecipeManager;
@@ -53,9 +54,9 @@ public class SawmillRecipeManager extends SingleItemRecipeManager {
     public void refresh(RecipeManager recipeManager) {
 
         clear();
-        var recipes = recipeManager.byType(SAWMILL_RECIPE.get());
-        for (var entry : recipes.entrySet()) {
-            addRecipe(entry.getValue().value());
+        var recipes = recipeManager.getAllRecipesFor(SAWMILL_RECIPE.get());
+        for (var recipe : recipes) {
+            addRecipe(recipe.value());
         }
 
         if (defaultLogRecipes) {
@@ -78,7 +79,7 @@ public class SawmillRecipeManager extends SingleItemRecipeManager {
 
     protected void createConvertedRecipes(RecipeManager recipeManager) {
 
-        for (var recipe : recipeManager.byType(RecipeType.CRAFTING).values()) {
+        for (var recipe : recipeManager.getAllRecipesFor(RecipeType.CRAFTING)) {
             if (recipe.value() instanceof ShapelessRecipe shapeless && recipe.value().getResultItem(RegistryAccess.EMPTY).is(ItemTags.PLANKS)) {
                 createConvertedRecipe(shapeless);
             }
@@ -107,9 +108,9 @@ public class SawmillRecipeManager extends SingleItemRecipeManager {
 
     protected RecipeHolder<SawmillRecipe> convert(Ingredient log, ItemStack planks) {
 
-        return new RecipeHolder<>(new ResourceLocation(ID_THERMAL, "sawmill_" + log.hashCode()),
+        return new RecipeHolder<>(ResourceLocation.parse(ID_THERMAL + ":sawmill_" + log.hashCode()),
                 new SawmillRecipe(getDefaultEnergy() / 2, 0.15F,
-                        Collections.singletonList(log),
+                        Collections.singletonList(new IngredientWithCount(log, 1)),
                         Collections.emptyList(), // no fluid input
                         Arrays.asList(cloneStack(planks, (int) (planks.getCount() * 1.5F)), new ItemStack(ITEMS.get("sawdust"))),
                         Arrays.asList(-1.0F, 1.25F), // output chances

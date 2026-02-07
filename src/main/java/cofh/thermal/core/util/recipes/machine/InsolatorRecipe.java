@@ -9,7 +9,7 @@ import cofh.thermal.lib.util.recipes.ThermalRecipe;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import cofh.lib.util.crafting.IngredientWithCount;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluids;
@@ -25,7 +25,7 @@ import static cofh.thermal.core.init.registries.TCoreRecipeTypes.INSOLATOR_RECIP
 
 public class InsolatorRecipe extends ThermalRecipe {
 
-    public InsolatorRecipe(int energy, float experience, List<Ingredient> inputItems, List<FluidIngredient> inputFluids, List<ItemStack> outputItems, List<Float> outputItemChances, List<FluidStack> outputFluids) {
+    public InsolatorRecipe(int energy, float experience, List<IngredientWithCount> inputItems, List<FluidIngredient> inputFluids, List<ItemStack> outputItems, List<Float> outputItemChances, List<FluidStack> outputFluids) {
 
         super(energy, experience, inputItems, inputFluids, outputItems, outputItemChances, outputFluids);
 
@@ -68,7 +68,7 @@ public class InsolatorRecipe extends ThermalRecipe {
             int water = defaultWater;
             float experience = 0.0F;
 
-            ArrayList<Ingredient> inputItems = new ArrayList<>();
+            ArrayList<IngredientWithCount> inputItems = new ArrayList<>();
             ArrayList<FluidIngredient> inputFluids = new ArrayList<>();
             ArrayList<ItemStack> outputItems = new ArrayList<>();
             ArrayList<Float> outputItemChances = new ArrayList<>();
@@ -131,3 +131,4 @@ public class InsolatorRecipe extends ThermalRecipe {
     }
     // endregion
 }
+

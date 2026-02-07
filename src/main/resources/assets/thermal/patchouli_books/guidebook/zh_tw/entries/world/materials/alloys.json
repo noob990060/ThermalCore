@@ -1,6 +1,6 @@
 {
   "name": "合金",
-  "icon": "thermal:bronze_ingot",
+  "icon": "thermal:niter",
   "read_by_default": true,
   "category": "thermal:materials",
   "pages": [
@@ -13,11 +13,9 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "青銅",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_bronze",
       "A.text": "新時代的曙光。",
-
       "B.title": "不變鋼",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_invar",
       "B.text": "受熱時膨脹最小。"
@@ -25,11 +23,9 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "琥珀金",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_electrum",
       "A.text": "兩全其美。",
-
       "B.title": "康銅",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_constantan",
       "B.text": "加熱時電阻係數變化最小。"
@@ -37,11 +33,9 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "流明",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_lumium",
       "A.text": "一塊堅固的陽光磚。",
-
       "B.title": "信素",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_signalum",
       "B.text": "導電率比銀好。"
@@ -49,12 +43,10 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "3_alloy_page",
-
       "title": "終界合金",
       "recipe": "thermal:machines/smelter/smelter_alloy_enderium",
       "text": "以任何頻率共振。"
     },
-
     {
       "flag": "!mod:thermal_expansion",
       "type": "patchouli:text",

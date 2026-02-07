@@ -59,4 +59,9 @@ public abstract class ThermalCatalyst extends SerializableRecipe {
         return useChance;
     }
     // endregion
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return true;
+    }
 }

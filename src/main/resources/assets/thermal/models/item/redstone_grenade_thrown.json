@@ -1,5 +1,5 @@
 {
-  "parent": "thermal:item/redstone_grenade",
+  "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "thermal:item/redstone_grenade_thrown"
   }

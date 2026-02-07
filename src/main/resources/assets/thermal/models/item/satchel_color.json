@@ -1,5 +1,5 @@
 {
-  "parent": "thermal:item/satchel",
+  "parent": "minecraft:item/handheld",
   "textures": {
     "layer0": "thermal:item/satchel_color",
     "layer1": "thermal:item/satchel_clasp"

@@ -1,6 +1,6 @@
 {
   "name": "Алхимический колчан",
-  "icon": "thermal:potion_quiver",
+  "icon": "thermal:phytogro",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_innovation",

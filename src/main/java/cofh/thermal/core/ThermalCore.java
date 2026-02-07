@@ -2,6 +2,7 @@ package cofh.thermal.core;
 
 import cofh.core.client.event.CoreClientEvents;
 import cofh.core.client.renderer.entity.TNTMinecartRendererCoFH;
+import cofh.core.client.renderer.entity.model.ArmorFullSuitModel;
 import cofh.core.common.config.ConfigManager;
 import cofh.core.common.config.world.FeatureConfig;
 import cofh.lib.client.renderer.entity.TntRendererCoFH;
@@ -24,18 +25,23 @@ import cofh.thermal.core.init.registries.*;
 import cofh.thermal.lib.util.ThermalProxy;
 import cofh.thermal.lib.util.ThermalProxyClient;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
@@ -53,14 +59,18 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nonnull;
 
 import static cofh.lib.util.FlagManager.getFlag;
 import static cofh.lib.util.FlagManager.setFlag;
@@ -68,7 +78,17 @@ import static cofh.lib.util.constants.ModIds.ID_THERMAL;
 import static cofh.thermal.core.init.registries.TCoreEntities.*;
 import static cofh.thermal.core.init.registries.TCoreMenus.*;
 import static cofh.thermal.lib.util.ThermalFlags.*;
-import static cofh.thermal.lib.util.ThermalIDs.ID_TINKER_BENCH;
+import static cofh.thermal.lib.util.ThermalIDs.*;
+
+import net.neoforged.neoforge.common.NeoForge;
+import cofh.thermal.core.common.event.TCoreCommonSetupEvents;
+
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import cofh.thermal.lib.util.ThermalRecipeManagers;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 @Mod (ID_THERMAL)
 public class ThermalCore {
@@ -94,7 +114,7 @@ public class ThermalCore {
     public static final DeferredRegisterCoFH<PlacementModifierType<?>> PLACEMENT_MODIFIERS = DeferredRegisterCoFH.create(Registries.PLACEMENT_MODIFIER_TYPE, ID_THERMAL);
 
     public static final DeferredRegisterCoFH<FluidType> FLUID_TYPES = DeferredRegisterCoFH.create(NeoForgeRegistries.Keys.FLUID_TYPES, ID_THERMAL);
-    public static final DeferredRegisterCoFH<Codec<? extends IGlobalLootModifier>> LOOT_SERIALIZERS = DeferredRegisterCoFH.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, ID_THERMAL);
+    public static final DeferredRegisterCoFH<MapCodec<? extends IGlobalLootModifier>> LOOT_SERIALIZERS = DeferredRegisterCoFH.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, ID_THERMAL);
 
     public ThermalCore(ModContainer modContainer, IEventBus modEventBus) {
 
@@ -111,11 +131,13 @@ public class ThermalCore {
         modEventBus.addListener(this::entityAttributeSetup);
         modEventBus.addListener(this::entityLayerSetup);
         modEventBus.addListener(this::entityRendererSetup);
-        modEventBus.addListener(this::spawnPlacementSetup);
+        // TODO: Fix spawn placement setup for 1.21.1
+        // modEventBus.addListener(this::spawnPlacementSetup);
         modEventBus.addListener(this::capabilitySetup);
         modEventBus.addListener(this::menuScreenSetup);
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::clientSetup);
+        modEventBus.addListener(this::registerClientExtensions);
         modEventBus.addListener(this::registrySetup);
 
         BLOCKS.register(modEventBus);
@@ -223,12 +245,13 @@ public class ThermalCore {
         event.registerEntityRenderer(BLIZZ_PROJECTILE.get(), BlizzProjectileRenderer::new);
     }
 
-    private void spawnPlacementSetup(final SpawnPlacementRegisterEvent event) {
-
-        event.register(BASALZ.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Basalz::canSpawn, SpawnPlacementRegisterEvent.Operation.REPLACE);
-        event.register(BLITZ.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Blitz::canSpawn, SpawnPlacementRegisterEvent.Operation.REPLACE);
-        event.register(BLIZZ.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Blizz::canSpawn, SpawnPlacementRegisterEvent.Operation.REPLACE);
-    }
+    // TODO: Fix spawn placement setup for 1.21.1
+    // private void spawnPlacementSetup(final RegisterSpawnPlacementsEvent event) {
+    //
+    //     event.register(BASALZ.get(), SpawnPlacements.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Basalz::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    //     event.register(BLITZ.get(), SpawnPlacements.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Blitz::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    //     event.register(BLIZZ.get(), SpawnPlacements.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Blizz::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    // }
 
     private void capabilitySetup(RegisterCapabilitiesEvent event) {
 
@@ -257,6 +280,29 @@ public class ThermalCore {
         // event.register(ITEM_CELL_CONTAINER, ItemCellScreen::new);
     }
 
+    @SubscribeEvent
+    public void addReloadListener(final AddReloadListenerEvent event) {
+
+        event.addListener((ResourceManagerReloadListener) manager -> {
+                ThermalRecipeManagers.instance().setServerRecipeManager(event.getServerResources().getRecipeManager());
+                ThermalRecipeManagers.instance().refreshServer();
+        });
+    }
+
+    @SubscribeEvent
+    public void tagsUpdated(final TagsUpdatedEvent event) {
+
+        ThermalRecipeManagers.instance().refreshServer();
+        ThermalRecipeManagers.instance().refreshClient();
+    }
+
+    @SubscribeEvent
+    public void recipesUpdated(final RecipesUpdatedEvent event) {
+
+        ThermalRecipeManagers.instance().setClientRecipeManager(event.getRecipeManager());
+        ThermalRecipeManagers.instance().refreshClient();
+    }
+
     private void commonSetup(final FMLCommonSetupEvent event) {
 
         event.enqueueWork(TCoreBlocks::setup);
@@ -270,6 +316,32 @@ public class ThermalCore {
         event.enqueueWork(this::registerRenderLayers);
 
         event.enqueueWork(() -> CoreClientEvents.addNamespace(ID_THERMAL));
+    }
+
+    private void registerClientExtensions(final RegisterClientExtensionsEvent event) {
+
+        IClientItemExtensions fullSuitArmor = new IClientItemExtensions() {
+            @Override
+            @Nonnull
+            public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
+
+                return armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.FEET ? _default : ArmorFullSuitModel.INSTANCE.get();
+            }
+        };
+
+        event.registerItem(fullSuitArmor,
+                ITEMS.get(ID_BEEKEEPER_HELMET),
+                ITEMS.get(ID_BEEKEEPER_CHESTPLATE),
+                ITEMS.get(ID_BEEKEEPER_LEGGINGS),
+                ITEMS.get(ID_BEEKEEPER_BOOTS),
+                ITEMS.get(ID_DIVING_HELMET),
+                ITEMS.get(ID_DIVING_CHESTPLATE),
+                ITEMS.get(ID_DIVING_LEGGINGS),
+                ITEMS.get(ID_DIVING_BOOTS),
+                ITEMS.get(ID_HAZMAT_HELMET),
+                ITEMS.get(ID_HAZMAT_CHESTPLATE),
+                ITEMS.get(ID_HAZMAT_LEGGINGS),
+                ITEMS.get(ID_HAZMAT_BOOTS));
     }
 
     private void registrySetup(final NewRegistryEvent event) {

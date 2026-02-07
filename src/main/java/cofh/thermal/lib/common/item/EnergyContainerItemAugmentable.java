@@ -3,8 +3,10 @@ package cofh.thermal.lib.common.item;
 import cofh.core.common.item.EnergyContainerItem;
 import cofh.core.common.item.IAugmentableItem;
 import cofh.core.util.helpers.AugmentDataHelper;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -54,14 +56,19 @@ public abstract class EnergyContainerItemAugmentable extends EnergyContainerItem
 
     protected void setAttributesFromAugment(ItemStack container, CompoundTag augmentData) {
 
-        CompoundTag subTag = container.getTagElement(TAG_PROPERTIES);
-        if (subTag == null) {
+        CompoundTag nbt = container.has(DataComponents.CUSTOM_DATA) 
+                ? container.get(DataComponents.CUSTOM_DATA).copyTag()
+                : new CompoundTag();
+        CompoundTag subTag = nbt.getCompound(TAG_PROPERTIES);
+        if (subTag.isEmpty()) {
             return;
         }
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_BASE_MOD);
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_RF_STORAGE);
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_RF_XFER);
         setAttributeFromAugmentMax(subTag, augmentData, TAG_AUGMENT_RF_CREATIVE);
+        nbt.put(TAG_PROPERTIES, subTag);
+        container.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
     }
 
     // region IEnergyContainerItem
@@ -106,7 +113,12 @@ public abstract class EnergyContainerItemAugmentable extends EnergyContainerItem
     @Override
     public void updateAugmentState(ItemStack container, List<ItemStack> augments) {
 
-        container.getOrCreateTag().put(TAG_PROPERTIES, new CompoundTag());
+        CompoundTag nbt = container.has(DataComponents.CUSTOM_DATA) 
+                ? container.get(DataComponents.CUSTOM_DATA).copyTag()
+                : new CompoundTag();
+        nbt.put(TAG_PROPERTIES, new CompoundTag());
+        container.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
+        
         for (ItemStack augment : augments) {
             CompoundTag augmentData = AugmentDataHelper.getAugmentData(augment);
             if (augmentData == null) {

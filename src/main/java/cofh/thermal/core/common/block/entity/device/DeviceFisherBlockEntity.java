@@ -15,8 +15,11 @@ import cofh.thermal.core.util.managers.device.FisherManager;
 import cofh.thermal.lib.common.block.entity.DeviceBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.player.Inventory;
@@ -162,7 +165,8 @@ public class DeviceFisherBlockEntity extends DeviceBlockEntity implements ITicka
             return;
         }
         if (valid) {
-            LootTable table = level.getServer().getLootData().getLootTable(FisherManager.instance().getBoostLootTable(inputSlot.getItemStack()));
+            ResourceLocation lootTableId = FisherManager.instance().getBoostLootTable(inputSlot.getItemStack());
+            LootTable table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, lootTableId));
             LootParams lootparams = (new LootParams.Builder((ServerLevel) level))
                     .withParameter(LootContextParams.ORIGIN, Vec3.atLowerCornerOf(getBlockPos()))
                     .create(LootContextParamSets.EMPTY);
@@ -204,18 +208,18 @@ public class DeviceFisherBlockEntity extends DeviceBlockEntity implements ITicka
 
     // region NBT
     @Override
-    public void load(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.load(nbt);
+        super.loadAdditional(nbt, lookupProvider);
 
         process = nbt.getInt(TAG_PROCESS);
         valid = nbt.getBoolean(TAG_VALID);
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookupProvider);
 
         nbt.putInt(TAG_PROCESS, process);
         nbt.putBoolean(TAG_VALID, valid);

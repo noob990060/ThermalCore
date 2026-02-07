@@ -30,9 +30,9 @@ public class HardenedGlassBlock extends TransparentBlock implements IDismantleab
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level worldIn, BlockPos pos, Player player, BlockHitResult hit) {
 
-        if (Utils.isWrench(player.getItemInHand(handIn))) {
+        if (Utils.isWrench(player.getItemInHand(InteractionHand.MAIN_HAND))) {
             if (player.isSecondaryUseActive()) {
                 if (canDismantle(worldIn, pos, state, player)) {
                     dismantleBlock(worldIn, pos, state, hit, player, returnDismantleDrops());

@@ -1,10 +1,9 @@
 {
   "name": "Подводная вагонетка",
-  "icon": "thermal:underwater_minecart",
+  "icon": "thermal:fluid_cell",
   "read_by_default": true,
   "flag": "mod:thermal_locomotion",
   "category": "thermal:locomotion",
-
   "pages": [
     {
       "type": "patchouli:text",

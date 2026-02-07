@@ -2,8 +2,11 @@ package cofh.thermal.core.util.recipes.device;
 
 import cofh.lib.util.recipes.SerializableRecipe;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -43,6 +46,12 @@ public class HiveExtractorMapping extends SerializableRecipe {
         return HIVE_EXTRACTOR_MAPPING.get();
     }
 
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+
+        return true;
+    }
+
     // region GETTERS
     public Block getHive() {
 
@@ -63,17 +72,22 @@ public class HiveExtractorMapping extends SerializableRecipe {
     // region SERIALIZER
     public static class Serializer implements RecipeSerializer<HiveExtractorMapping> {
 
-        public static final Codec<HiveExtractorMapping> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+        public static final MapCodec<HiveExtractorMapping> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
                         Block.CODEC.fieldOf(HIVE).forGetter(recipe -> recipe.hive),
-                        ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf(ITEM).forGetter(recipe -> recipe.item),
+                        ItemStack.CODEC.fieldOf(ITEM).forGetter(recipe -> recipe.item),
                         FluidStack.CODEC.fieldOf(FLUID).forGetter(recipe -> recipe.fluid)
                 ).apply(builder, HiveExtractorMapping::new)
         );
 
         @Override
-        public Codec<HiveExtractorMapping> codec() {
+        public MapCodec<HiveExtractorMapping> codec() {
 
             return CODEC;
+        }
+
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, HiveExtractorMapping> streamCodec() {
+            return StreamCodec.of(HiveExtractorMapping.Serializer::toNetwork, HiveExtractorMapping.Serializer::fromNetwork);
         }
 
         //        @Override
@@ -95,23 +109,20 @@ public class HiveExtractorMapping extends SerializableRecipe {
         //            return new HiveExtractorMapping(recipeId, hive, item, fluid);
         //        }
 
-        @Nullable
-        @Override
-        public HiveExtractorMapping fromNetwork(FriendlyByteBuf buffer) {
+        private static HiveExtractorMapping fromNetwork(RegistryFriendlyByteBuf buffer) {
 
             Block hive = BuiltInRegistries.BLOCK.get(buffer.readResourceLocation());
-            ItemStack item = buffer.readItem();
-            FluidStack fluid = buffer.readFluidStack();
+            ItemStack item = ItemStack.STREAM_CODEC.decode(buffer);
+            FluidStack fluid = FluidStack.STREAM_CODEC.decode(buffer);
 
             return new HiveExtractorMapping(hive, item, fluid);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, HiveExtractorMapping recipe) {
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, HiveExtractorMapping recipe) {
 
             buffer.writeResourceLocation(getRegistryName(recipe.hive));
-            buffer.writeItem(recipe.item);
-            buffer.writeFluidStack(recipe.fluid);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.item);
+            FluidStack.STREAM_CODEC.encode(buffer, recipe.fluid);
         }
 
     }

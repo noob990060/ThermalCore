@@ -11,11 +11,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.constants.NBTTags.TAG_XP_TIMER;
@@ -27,19 +27,19 @@ public class XpCrystalItem extends XpContainerItem implements IMultiModeItem {
 
         super(builder, xpCapacity);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("stored"), (stack, world, living, seed) -> ((float) getStoredXp(stack)) / getCapacityXp(stack));
+        ProxyUtils.registerItemModelProperty(this, ResourceLocation.parse("stored"), (stack, world, living, seed) -> ((float) getStoredXp(stack)) / getCapacityXp(stack));
     }
 
     @Override
-    protected void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    protected void tooltipDelegate(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
         tooltip.add(getTextComponent("info.thermal.xp_crystal.use").withStyle(ChatFormatting.GRAY));
         tooltip.add(getTextComponent("info.thermal.xp_crystal.use.sneak").withStyle(ChatFormatting.DARK_GRAY));
 
         tooltip.add(getTextComponent("info.thermal.xp_crystal.mode." + getMode(stack)).withStyle(ChatFormatting.ITALIC));
-        addModeChangeTooltip(this, stack, worldIn, tooltip, flagIn);
+        addModeChangeTooltip(this, stack, null, tooltip, flagIn);
 
-        super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        super.tooltipDelegate(stack, context, tooltip, flagIn);
     }
 
     @Override

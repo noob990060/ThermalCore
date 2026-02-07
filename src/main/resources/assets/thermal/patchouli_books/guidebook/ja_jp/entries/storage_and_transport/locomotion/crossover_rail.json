@@ -1,10 +1,9 @@
 {
   "name": "十字レール",
-  "icon": "thermal:crossover_rail",
+  "icon": "thermal:energy_cell",
   "read_by_default": true,
   "flag": "mod:thermal_locomotion",
   "category": "thermal:locomotion",
-
   "pages": [
     {
       "type": "patchouli:text",

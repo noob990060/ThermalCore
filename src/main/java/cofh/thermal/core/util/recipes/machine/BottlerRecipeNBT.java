@@ -2,7 +2,10 @@ package cofh.thermal.core.util.recipes.machine;
 
 import cofh.thermal.lib.util.recipes.IMachineInventory;
 import cofh.thermal.lib.util.recipes.internal.BaseMachineRecipe;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -27,9 +30,13 @@ public class BottlerRecipeNBT extends BaseMachineRecipe {
 
         FluidStack fluid = inventory.inputTanks().get(0).getFluidStack();
         ItemStack item = outputItems.get(0).copy();
-        if (fluid.hasTag()) {
-            item.setTag(fluid.getTag().copy());
+        
+        // Check if fluid has custom data and copy it to the item
+        if (fluid.has(DataComponents.CUSTOM_DATA)) {
+            CompoundTag fluidTag = fluid.get(DataComponents.CUSTOM_DATA).copyTag();
+            item.set(DataComponents.CUSTOM_DATA, CustomData.of(fluidTag));
         }
+        
         return Collections.singletonList(item);
     }
 

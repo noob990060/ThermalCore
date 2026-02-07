@@ -1,10 +1,9 @@
 {
   "name": "流体ダクト",
-  "icon": "thermal:fluid_duct",
+  "icon": "thermal:fluid_cell",
   "read_by_default": true,
   "flag": "mod:thermal_dynamics",
   "category": "thermal:ducts",
-
   "pages": [
     {
       "type": "patchouli:text",

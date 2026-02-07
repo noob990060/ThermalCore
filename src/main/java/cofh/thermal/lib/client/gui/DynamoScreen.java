@@ -40,7 +40,8 @@ public class DynamoScreen<T extends ContainerMenuCoFH> extends AugmentableTileSc
                 }
             }
                     .setSize(16, 42)
-                    .setTexture(PATH_ELEMENTS + "storage_energy.png", 32, 64);
+                    .setTexture(PATH_ELEMENTS + "storage_energy.png", 32, 64)
+                    .setVisible(() -> true);
             addElement(throttle);
         }
     }

@@ -2,8 +2,10 @@ package cofh.thermal.core.compat.jei;
 
 import cofh.core.util.helpers.FluidHelper;
 import cofh.thermal.core.client.gui.device.DeviceComposterScreen;
+import cofh.thermal.core.client.gui.device.DeviceHiveExtractorScreen;
 import cofh.thermal.core.client.gui.device.DeviceRockGenScreen;
 import cofh.thermal.core.client.gui.device.DeviceTreeExtractorScreen;
+import cofh.thermal.core.compat.jei.device.HiveExtractorCategory;
 import cofh.thermal.core.compat.jei.device.RockGenCategory;
 import cofh.thermal.core.compat.jei.device.TreeExtractorCategory;
 import mezz.jei.api.IModPlugin;
@@ -23,16 +25,20 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static cofh.lib.util.Constants.BASE_CHANCE;
 import static cofh.lib.util.Constants.BUCKET_VOLUME;
 import static cofh.lib.util.FlagManager.getFlag;
-import static cofh.lib.util.constants.ModIds.ID_THERMAL;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static cofh.lib.util.constants.ModIds.ID_THERMAL;
 import static cofh.thermal.core.ThermalCore.BLOCKS;
 import static cofh.thermal.core.common.config.ThermalClientConfig.jeiBucketTanks;
+import static cofh.thermal.core.compat.jei.TCoreJeiRecipeTypes.HIVE_EXTRACTOR_TYPE;
 import static cofh.thermal.core.compat.jei.TCoreJeiRecipeTypes.ROCK_GEN_TYPE;
 import static cofh.thermal.core.compat.jei.TCoreJeiRecipeTypes.TREE_EXTRACTOR_TYPE;
+import static cofh.thermal.core.init.registries.TCoreRecipeTypes.HIVE_EXTRACTOR_MAPPING;
 import static cofh.thermal.core.init.registries.TCoreRecipeTypes.ROCK_GEN_MAPPING;
 import static cofh.thermal.core.init.registries.TCoreRecipeTypes.TREE_EXTRACTOR_MAPPING;
 import static cofh.thermal.lib.util.ThermalIDs.*;
@@ -40,16 +46,21 @@ import static cofh.thermal.lib.util.ThermalIDs.*;
 @JeiPlugin
 public class TCoreJeiPlugin implements IModPlugin {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TCoreJeiPlugin.class);
+
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
 
         RecipeManager recipeManager = getRecipeManager();
         if (recipeManager == null) {
-            // TODO: Log an error.
+            LOGGER.error("Failed to get RecipeManager - unable to register JEI recipes");
             return;
         }
         if (getFlag(ID_DEVICE_TREE_EXTRACTOR).get()) {
             registration.addRecipes(TREE_EXTRACTOR_TYPE, recipeManager.getAllRecipesFor(TREE_EXTRACTOR_MAPPING.get()));
+        }
+        if (getFlag(ID_DEVICE_HIVE_EXTRACTOR).get()) {
+            registration.addRecipes(HIVE_EXTRACTOR_TYPE, recipeManager.getAllRecipesFor(HIVE_EXTRACTOR_MAPPING.get()));
         }
         if (getFlag(ID_DEVICE_ROCK_GEN).get()) {
             registration.addRecipes(ROCK_GEN_TYPE, recipeManager.getAllRecipesFor(ROCK_GEN_MAPPING.get()));
@@ -60,6 +71,7 @@ public class TCoreJeiPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
 
         registration.addRecipeCategories(new TreeExtractorCategory(registration.getJeiHelpers().getGuiHelper(), new ItemStack(BLOCKS.get(ID_DEVICE_TREE_EXTRACTOR)), TREE_EXTRACTOR_TYPE));
+        registration.addRecipeCategories(new HiveExtractorCategory(registration.getJeiHelpers().getGuiHelper(), new ItemStack(BLOCKS.get(ID_DEVICE_HIVE_EXTRACTOR)), HIVE_EXTRACTOR_TYPE));
         registration.addRecipeCategories(new RockGenCategory(registration.getJeiHelpers().getGuiHelper(), new ItemStack(BLOCKS.get(ID_DEVICE_ROCK_GEN)), ROCK_GEN_TYPE));
     }
 
@@ -67,6 +79,7 @@ public class TCoreJeiPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 
         registration.addRecipeCatalyst(new ItemStack(BLOCKS.get(ID_DEVICE_TREE_EXTRACTOR)), TREE_EXTRACTOR_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(BLOCKS.get(ID_DEVICE_HIVE_EXTRACTOR)), HIVE_EXTRACTOR_TYPE);
         registration.addRecipeCatalyst(new ItemStack(BLOCKS.get(ID_DEVICE_COMPOSTER)), RecipeTypes.COMPOSTING);
         registration.addRecipeCatalyst(new ItemStack(BLOCKS.get(ID_DEVICE_ROCK_GEN)), ROCK_GEN_TYPE);
     }
@@ -79,6 +92,7 @@ public class TCoreJeiPlugin implements IModPlugin {
         int progressH = 16;
 
         registration.addRecipeClickArea(DeviceTreeExtractorScreen.class, 80, progressY, 16, progressH, TREE_EXTRACTOR_TYPE);
+        registration.addRecipeClickArea(DeviceHiveExtractorScreen.class, 80, progressY, 16, progressH, HIVE_EXTRACTOR_TYPE);
         registration.addRecipeClickArea(DeviceComposterScreen.class, 87, progressY, progressW, progressH, RecipeTypes.COMPOSTING);
         registration.addRecipeClickArea(DeviceRockGenScreen.class, 84, progressY, progressW, progressH, ROCK_GEN_TYPE);
     }
@@ -86,7 +100,7 @@ public class TCoreJeiPlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
 
-        return new ResourceLocation(ID_THERMAL, "core");
+        return ResourceLocation.fromNamespaceAndPath(ID_THERMAL, "core");
     }
 
     // region HELPERS

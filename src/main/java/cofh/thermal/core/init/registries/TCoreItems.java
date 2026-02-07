@@ -9,14 +9,20 @@ import cofh.lib.common.block.TntBlockCoFH;
 import cofh.lib.common.item.ArmorMaterialCoFH;
 import cofh.thermal.core.common.item.*;
 import cofh.thermal.lib.common.item.AugmentItem;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.HoneyBottleItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import static cofh.lib.util.Constants.BUCKET_VOLUME;
 import static cofh.lib.util.FlagManager.getFlag;
@@ -25,6 +31,7 @@ import static cofh.lib.util.constants.NBTTags.*;
 import static cofh.thermal.core.ThermalCore.BLOCKS;
 import static cofh.thermal.core.ThermalCore.ITEMS;
 import static cofh.thermal.core.init.registries.TCoreEntities.*;
+import static cofh.thermal.core.init.registries.TCoreSounds.*;
 import static cofh.thermal.core.init.registries.ThermalCreativeTabs.*;
 import static cofh.thermal.core.util.RegistrationHelper.*;
 import static cofh.thermal.lib.util.ThermalAugmentRules.flagUniqueAugment;
@@ -438,8 +445,37 @@ public class TCoreItems {
     }
     // endregion
 
-    public static final ArmorMaterialCoFH BEEKEEPER = new ArmorMaterialCoFH("thermal:beekeeper", 4, new int[]{1, 2, 3, 1}, 16, SoundEvents.ARMOR_EQUIP_ELYTRA, 0.0F, 0.0F, () -> Ingredient.of(ITEMS.get("beekeeper_fabric")));
-    public static final ArmorMaterialCoFH DIVING = new ArmorMaterialCoFH("thermal:diving", 12, new int[]{1, 4, 5, 2}, 20, SoundEvents.ARMOR_EQUIP_CHAIN, 0.0F, 0.0F, () -> Ingredient.of(ITEMS.get("diving_fabric")));
-    public static final ArmorMaterialCoFH HAZMAT = new ArmorMaterialCoFH("thermal:hazmat", 6, new int[]{1, 4, 5, 2}, 15, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> Ingredient.of(ITEMS.get("hazmat_fabric")));
+    // region ARMOR MATERIALS
+    public static final Holder<ArmorMaterial> BEEKEEPER = Holder.direct(ArmorMaterialCoFH.create(
+            "beekeeper",
+            15,
+            new int[]{1, 3, 2, 1},
+            15,
+            SOUND_ARMOR_BEEKEEPER,
+            0.0F,
+            0.0F,
+            () -> Ingredient.of(ITEMS.get("beekeeper_fabric"))
+    ));
+    public static final Holder<ArmorMaterial> DIVING = Holder.direct(ArmorMaterialCoFH.create(
+            "diving",
+            15,
+            new int[]{1, 3, 2, 1},
+            15,
+            SOUND_ARMOR_DIVING,
+            0.0F,
+            0.0F,
+            () -> Ingredient.of(ITEMS.get("diving_fabric"))
+    ));
+    public static final Holder<ArmorMaterial> HAZMAT = Holder.direct(ArmorMaterialCoFH.create(
+            "hazmat",
+            15,
+            new int[]{1, 3, 2, 1},
+            15,
+            SOUND_ARMOR_HAZMAT,
+            0.0F,
+            0.0F,
+            () -> Ingredient.of(ITEMS.get("hazmat_fabric"))
+    ));
+    // endregion
 
 }

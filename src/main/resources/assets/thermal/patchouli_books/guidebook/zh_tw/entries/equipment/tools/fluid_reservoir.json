@@ -1,6 +1,6 @@
 {
   "name": "貯液器",
-  "icon": "thermal:fluid_reservoir",
+  "icon": "thermal:fluid_cell",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_innovation",

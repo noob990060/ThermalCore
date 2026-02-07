@@ -45,7 +45,7 @@ public class FisherManager extends AbstractManager {
 
     public ResourceLocation getBoostLootTable(ItemStack item) {
 
-        return validBoost(item) ? boostMap.get(makeNBTComparable(item)).getLeft() : BuiltInLootTables.FISHING_FISH;
+        return validBoost(item) ? boostMap.get(makeNBTComparable(item)).getLeft() : BuiltInLootTables.FISHING_FISH.location();
     }
 
     public float getBoostOutputMod(ItemStack item) {
@@ -64,9 +64,9 @@ public class FisherManager extends AbstractManager {
     public void refresh(RecipeManager recipeManager) {
 
         clear();
-        var boosts = recipeManager.byType(FISHER_BOOST.get());
-        for (var entry : boosts.entrySet()) {
-            addBoost(entry.getValue().value());
+        var boosts = recipeManager.getAllRecipesFor(FISHER_BOOST.get());
+        for (var recipe : boosts) {
+            addBoost(recipe.value());
         }
     }
     // endregion

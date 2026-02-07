@@ -4,6 +4,8 @@ import cofh.core.util.control.*;
 import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,20 +58,32 @@ public abstract class StorageCellBlockEntity extends AugmentableBlockEntity impl
         updateHandlers();
     }
 
+    public void onBlockStateChange(BlockState state) {
+
+        updateSideCache();
+    }
+
+    @SuppressWarnings("deprecation")
     @Override
     public void setBlockState(BlockState state) {
 
         super.setBlockState(state);
-        updateSideCache();
+        onBlockStateChange(state);
     }
 
     @Override
     public ItemStack createItemStackTag(ItemStack stack) {
 
-        CompoundTag nbt = stack.getOrCreateTagElement(TAG_BLOCK_ENTITY);
+        CompoundTag nbt = stack.has(DataComponents.CUSTOM_DATA) 
+                ? stack.get(DataComponents.CUSTOM_DATA).copyTag()
+                : new CompoundTag();
+        CompoundTag blockEntityTag = nbt.getCompound(TAG_BLOCK_ENTITY);
 
-        nbt.putInt(TAG_AMOUNT_IN, amountInput);
-        nbt.putInt(TAG_AMOUNT_OUT, amountOutput);
+        blockEntityTag.putInt(TAG_AMOUNT_IN, amountInput);
+        blockEntityTag.putInt(TAG_AMOUNT_OUT, amountOutput);
+        
+        nbt.put(TAG_BLOCK_ENTITY, blockEntityTag);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
 
         return super.createItemStackTag(stack);
     }
@@ -118,9 +133,9 @@ public abstract class StorageCellBlockEntity extends AugmentableBlockEntity impl
 
     // region NETWORK
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
 
-        super.onDataPacket(net, pkt);
+        super.onDataPacket(net, pkt, lookupProvider);
 
         level.getChunkSource().getLightEngine().checkBlock(worldPosition);
         if (level != null) {
@@ -235,9 +250,9 @@ public abstract class StorageCellBlockEntity extends AugmentableBlockEntity impl
 
     // region NBT
     @Override
-    public void load(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.load(nbt);
+        super.loadAdditional(nbt, lookupProvider);
 
         reconfigControl.setFacing(Direction.from3DDataValue(nbt.getByte(TAG_FACING)));
         reconfigControl.read(nbt);
@@ -251,9 +266,9 @@ public abstract class StorageCellBlockEntity extends AugmentableBlockEntity impl
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookupProvider);
 
         nbt.putByte(TAG_FACING, (byte) reconfigControl.getFacing().get3DDataValue());
         reconfigControl.write(nbt);

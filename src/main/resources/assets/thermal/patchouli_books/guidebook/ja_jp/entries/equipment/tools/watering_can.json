@@ -1,6 +1,6 @@
 {
   "name": "ジョウロ",
-  "icon": "thermal:watering_can",
+  "icon": "thermal:phytogro",
   "category": "thermal:tools",
   "read_by_default": true,
   "flag": "mod:thermal_cultivation",

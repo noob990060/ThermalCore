@@ -1,15 +1,17 @@
 package cofh.thermal.lib.util.recipes;
 
 import cofh.lib.common.fluid.FluidIngredient;
+import cofh.lib.util.crafting.IngredientWithCount;
 import cofh.lib.util.helpers.MathHelper;
 import cofh.lib.util.recipes.JsonMapCodec;
 import cofh.thermal.core.ThermalCore;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
@@ -25,6 +27,7 @@ public class DynamoFuelSerializer<T extends ThermalFuel> implements RecipeSerial
     protected final int minEnergy;
     protected final int maxEnergy;
     protected final IFactory<T> factory;
+    protected final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
     public DynamoFuelSerializer(IFactory<T> factory, int defaultEnergy, int minEnergy, int maxEnergy) {
 
@@ -32,10 +35,11 @@ public class DynamoFuelSerializer<T extends ThermalFuel> implements RecipeSerial
         this.defaultEnergy = defaultEnergy;
         this.minEnergy = minEnergy;
         this.maxEnergy = maxEnergy;
+        this.streamCodec = StreamCodec.of(this::toNetwork, this::fromNetwork);
     }
 
     @Override
-    public Codec<T> codec() {
+    public MapCodec<T> codec() {
 
         return JsonMapCodec.INSTANCE
                 .flatXmap(json -> {
@@ -44,15 +48,20 @@ public class DynamoFuelSerializer<T extends ThermalFuel> implements RecipeSerial
                     } catch (JsonParseException e) {
                         return DataResult.error(e::getMessage);
                     }
-                }, recipe -> DataResult.success(toJson(recipe)))
-                .codec();
+                }, recipe -> DataResult.success(toJson(recipe)));
+    }
+
+    @Override
+    public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+
+        return streamCodec;
     }
 
     protected T fromJson(JsonObject json) {
 
         int energy = defaultEnergy;
 
-        ArrayList<Ingredient> inputItems = new ArrayList<>();
+        ArrayList<IngredientWithCount> inputItems = new ArrayList<>();
         ArrayList<FluidIngredient> inputFluids = new ArrayList<>();
 
         /* INPUT */
@@ -89,15 +98,16 @@ public class DynamoFuelSerializer<T extends ThermalFuel> implements RecipeSerial
     }
 
     @Nullable
-    @Override
-    public T fromNetwork(FriendlyByteBuf buffer) {
+    public T fromNetwork(RegistryFriendlyByteBuf buffer) {
 
         int energy = buffer.readVarInt();
 
         int numInputItems = buffer.readVarInt();
-        ArrayList<Ingredient> inputItems = new ArrayList<>(numInputItems);
+        ArrayList<IngredientWithCount> inputItems = new ArrayList<>(numInputItems);
         for (int i = 0; i < numInputItems; ++i) {
-            inputItems.add(Ingredient.fromNetwork(buffer));
+            Ingredient ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+            int count = buffer.readVarInt();
+            inputItems.add(new IngredientWithCount(ingredient, count));
         }
 
         int numInputFluids = buffer.readVarInt();
@@ -108,15 +118,16 @@ public class DynamoFuelSerializer<T extends ThermalFuel> implements RecipeSerial
         return factory.create(energy, inputItems, inputFluids);
     }
 
-    @Override
-    public void toNetwork(FriendlyByteBuf buffer, T recipe) {
+    public void toNetwork(RegistryFriendlyByteBuf buffer, T recipe) {
 
         buffer.writeVarInt(recipe.energy);
 
         int numInputItems = recipe.inputItems.size();
         buffer.writeVarInt(numInputItems);
         for (int i = 0; i < numInputItems; ++i) {
-            recipe.inputItems.get(i).toNetwork(buffer);
+            IngredientWithCount ingredient = recipe.inputItems.get(i);
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient.ingredient());
+            buffer.writeVarInt(ingredient.count());
         }
         int numInputFluids = recipe.inputFluids.size();
         buffer.writeVarInt(numInputFluids);
@@ -127,7 +138,7 @@ public class DynamoFuelSerializer<T extends ThermalFuel> implements RecipeSerial
 
     public interface IFactory<T extends ThermalFuel> {
 
-        T create(int energy, List<Ingredient> inputItems, List<FluidIngredient> inputFluids);
+        T create(int energy, List<IngredientWithCount> inputItems, List<FluidIngredient> inputFluids);
 
     }
 

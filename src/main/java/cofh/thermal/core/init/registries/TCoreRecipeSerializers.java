@@ -22,6 +22,8 @@ public class TCoreRecipeSerializers {
 
     public static void register() {
 
+        System.out.println("[TREE_EXTRACTOR DEBUG] TCoreRecipeSerializers.register() called");
+        System.out.println("[TREE_EXTRACTOR DEBUG] Registering TREE_EXTRACTOR_SERIALIZER: " + ID_TREE_EXTRACTOR_MAPPING);
     }
 
     public static final DeferredHolder<RecipeSerializer<?>, HiveExtractorMapping.Serializer> HIVE_EXTRACTOR_SERIALIZER = RECIPE_SERIALIZERS.register(ID_HIVE_EXTRACTOR_MAPPING, HiveExtractorMapping.Serializer::new);

@@ -1,6 +1,6 @@
 {
   "name": "合金",
-  "icon": "thermal:bronze_ingot",
+  "icon": "thermal:niter",
   "read_by_default": true,
   "category": "thermal:materials",
   "pages": [
@@ -13,11 +13,9 @@
     {
       "flag": "&mod:thermal_expansion,mod:thermal_foundation",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "青銅",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_bronze",
       "A.text": "新時代の幕開け",
-
       "B.title": "インバー",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_invar",
       "B.text": "熱膨張率が低い"
@@ -25,11 +23,9 @@
     {
       "flag": "&mod:thermal_expansion,mod:thermal_foundation",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "エレクトラム",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_electrum",
       "A.text": "両方の世界で最高のもの",
-
       "B.title": "コンスタンタン",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_constantan",
       "B.text": "熱による抵抗変化が小さい"
@@ -37,11 +33,9 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "thermal:3-3_alloy_page",
-
       "A.title": "ルミウム",
       "A.recipe": "thermal:machines/smelter/smelter_alloy_lumium",
       "A.text": "固体の日光で出来たレンガ",
-
       "B.title": "シグナルム",
       "B.recipe": "thermal:machines/smelter/smelter_alloy_signalum",
       "B.text": "銀より良い導体"
@@ -49,12 +43,10 @@
     {
       "flag": "mod:thermal_expansion",
       "type": "3_alloy_page",
-
       "title": "エンダリウム",
       "recipe": "thermal:machines/smelter/smelter_alloy_enderium",
       "text": "あらゆる周波数と共振する"
     },
-
     {
       "flag": "!mod:thermal_expansion",
       "type": "patchouli:text",
