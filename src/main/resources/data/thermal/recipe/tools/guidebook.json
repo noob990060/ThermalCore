@@ -12,9 +12,9 @@
                    "nbt":  "{\"patchouli:book\":\"thermal:guidebook\"}",
                    "id":  "patchouli:guide_book"
                },
-    "conditions":  [
+    "neoforge:conditions":  [
                        {
-                           "type":  "c:mod_loaded",
+                           "type":  "neoforge:mod_loaded",
                            "modid":  "patchouli"
                        }
                    ]
