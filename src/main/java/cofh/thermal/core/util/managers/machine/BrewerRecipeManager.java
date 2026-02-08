@@ -19,6 +19,7 @@ import cofh.thermal.lib.util.recipes.internal.SimpleMachineRecipe;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 
@@ -180,10 +182,15 @@ public class BrewerRecipeManager extends AbstractManager implements IRecipeManag
 
     protected void createConvertedRecipes() {
 
-        // TODO: Fix potion brewing API access for 1.21.1
-        // The PotionBrewing.POTION_MIXES field is no longer available
-        // Need to access the PotionBrewing instance through the server or find alternative approach
-        ThermalCore.LOG.debug("Skipping default Brewing Stand recipes due to API changes in 1.21.1");
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            ThermalCore.LOG.warn("Cannot create converted Brewing Stand recipes: server is not available.");
+            return;
+        }
+        PotionBrewing potionBrewing = server.potionBrewing();
+        for (var mix : potionBrewing.potionMixes) {
+            createConvertedRecipe(mix.from().value(), mix.ingredient(), mix.to().value());
+        }
     }
 
     protected boolean createConvertedRecipe(Potion inputPotion, Ingredient reagent, Potion outputPotion) {
