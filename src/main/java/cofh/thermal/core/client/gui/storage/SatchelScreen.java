@@ -23,12 +23,13 @@ import java.util.Collections;
 import static cofh.core.util.helpers.GuiHelper.*;
 import static cofh.lib.util.Constants.PATH_ELEMENTS;
 import static cofh.lib.util.Constants.PATH_GUI;
+import static cofh.lib.util.constants.ModIds.ID_THERMAL;
 
 public class SatchelScreen extends ContainerScreenCoFH<SatchelMenu> {
 
-    public static final ResourceLocation TEXTURE = ResourceLocation.parse(PATH_GUI + "generic.png");
-    public static final ResourceLocation TEXTURE_EXT = ResourceLocation.parse(PATH_GUI + "generic_extension.png");
-    public static final ResourceLocation SLOT_OVERLAY = ResourceLocation.parse(PATH_ELEMENTS + "locked_overlay_slot.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ID_THERMAL, PATH_GUI + "generic.png");
+    public static final ResourceLocation TEXTURE_EXT = ResourceLocation.fromNamespaceAndPath(ID_THERMAL, PATH_GUI + "generic_extension.png");
+    public static final ResourceLocation SLOT_OVERLAY = ResourceLocation.fromNamespaceAndPath(ID_THERMAL, PATH_ELEMENTS + "locked_overlay_slot.png");
 
     protected int renderExtension;
 
