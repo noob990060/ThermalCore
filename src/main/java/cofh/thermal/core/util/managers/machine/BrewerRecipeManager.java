@@ -8,6 +8,7 @@ import cofh.lib.common.fluid.FluidIngredient;
 import cofh.lib.util.crafting.ComparableItemStack;
 import cofh.lib.util.crafting.IngredientWithCount;
 import cofh.thermal.core.ThermalCore;
+import cofh.thermal.lib.util.ThermalRecipeManagers;
 import cofh.thermal.core.util.recipes.machine.BrewerRecipe;
 import cofh.thermal.lib.util.managers.AbstractManager;
 import cofh.thermal.lib.util.managers.IRecipeManager;
@@ -69,7 +70,7 @@ public class BrewerRecipeManager extends AbstractManager implements IRecipeManag
 
     public void addRecipe(ThermalRecipe recipe) {
 
-        recipe.getInputItems().get(0).ingredient().itemStacks = null;
+        ThermalRecipeManagers.invalidateIngredientCache(recipe.getInputItems().get(0).ingredient());
         for (ItemStack recipeInput : recipe.getInputItems().get(0).getItems()) {
             for (FluidStack fluidInput : recipe.getInputFluids().get(0).getFluids()) {
                 addRecipe(recipe.getEnergy(), recipe.getXp(), Collections.singletonList(recipeInput), Collections.singletonList(fluidInput), recipe.getOutputItems(), recipe.getOutputItemChances(), recipe.getOutputFluids());

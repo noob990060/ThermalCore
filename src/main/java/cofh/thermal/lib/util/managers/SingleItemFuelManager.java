@@ -4,6 +4,7 @@ import cofh.lib.api.fluid.IFluidStackHolder;
 import cofh.lib.api.inventory.IItemStackHolder;
 import cofh.lib.common.inventory.ItemStackHolder;
 import cofh.lib.util.crafting.ComparableItemStack;
+import cofh.thermal.lib.util.ThermalRecipeManagers;
 import cofh.thermal.lib.util.recipes.IThermalInventory;
 import cofh.thermal.lib.util.recipes.ThermalFuel;
 import cofh.thermal.lib.util.recipes.internal.BaseDynamoFuel;
@@ -32,7 +33,7 @@ public abstract class SingleItemFuelManager extends AbstractManager implements I
 
     public void addFuel(ThermalFuel recipe) {
 
-        recipe.getInputItems().get(0).ingredient().itemStacks = null;
+        ThermalRecipeManagers.invalidateIngredientCache(recipe.getInputItems().get(0).ingredient());
         for (ItemStack recipeInput : recipe.getInputItems().get(0).getItems()) {
             addFuel(recipe.getEnergy(), Collections.singletonList(recipeInput), Collections.emptyList());
         }

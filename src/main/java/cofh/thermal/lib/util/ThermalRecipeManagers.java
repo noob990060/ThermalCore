@@ -1,7 +1,9 @@
 package cofh.thermal.lib.util;
 
 import cofh.thermal.lib.util.managers.IManager;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,22 @@ public class ThermalRecipeManagers {
         }
         for (IManager sub : managers) {
             sub.refresh(this.clientRecipeManager);
+        }
+    }
+    /**
+     * Recursively clears the itemStacks and stackingIds caches on an Ingredient,
+     * including children of CompoundIngredient. This is necessary because
+     * CompoundIngredient.getItems() delegates to child.getItems(), and each child
+     * has its own separate cache that must also be invalidated.
+     */
+    public static void invalidateIngredientCache(Ingredient ingredient) {
+
+        ingredient.itemStacks = null;
+        ingredient.stackingIds = null;
+        if (ingredient.isCustom() && ingredient.getCustomIngredient() instanceof CompoundIngredient compound) {
+            for (Ingredient child : compound.children()) {
+                invalidateIngredientCache(child);
+            }
         }
     }
     // endregion

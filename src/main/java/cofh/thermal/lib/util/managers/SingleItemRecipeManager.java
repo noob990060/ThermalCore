@@ -4,6 +4,8 @@ import cofh.lib.api.fluid.IFluidStackHolder;
 import cofh.lib.api.inventory.IItemStackHolder;
 import cofh.lib.common.inventory.ItemStackHolder;
 import cofh.lib.util.crafting.ComparableItemStack;
+import cofh.thermal.lib.util.ThermalRecipeManagers;
+import cofh.thermal.lib.util.managers.AbstractManager;
 import cofh.thermal.lib.util.recipes.IThermalInventory;
 import cofh.thermal.lib.util.recipes.ThermalCatalyst;
 import cofh.thermal.lib.util.recipes.ThermalRecipe;
@@ -41,7 +43,7 @@ public abstract class SingleItemRecipeManager extends AbstractManager implements
 
     public void addRecipe(ThermalRecipe recipe, BaseMachineRecipe.RecipeType type) {
 
-        recipe.getInputItems().get(0).ingredient().itemStacks = null;
+        ThermalRecipeManagers.invalidateIngredientCache(recipe.getInputItems().get(0).ingredient());
         if (!recipe.getInputFluids().isEmpty()) {
             for (FluidStack fluidInput : recipe.getInputFluids().get(0).getFluids()) {
                 for (ItemStack recipeInput : recipe.getInputItems().get(0).getItems()) {
@@ -179,7 +181,7 @@ public abstract class SingleItemRecipeManager extends AbstractManager implements
 
         public void addCatalyst(ThermalCatalyst catalyst) {
 
-            catalyst.getIngredient().itemStacks = null;
+            ThermalRecipeManagers.invalidateIngredientCache(catalyst.getIngredient());
             for (ItemStack ingredient : catalyst.getIngredient().getItems()) {
                 addCatalyst(ingredient, catalyst.getPrimaryMod(), catalyst.getSecondaryMod(), catalyst.getEnergyMod(), catalyst.getMinChance(), catalyst.getUseChance());
             }

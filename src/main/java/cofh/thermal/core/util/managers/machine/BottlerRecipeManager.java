@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import cofh.lib.util.crafting.IngredientWithCount;
+import cofh.thermal.lib.util.ThermalRecipeManagers;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -92,7 +93,7 @@ public class BottlerRecipeManager extends AbstractManager implements IRecipeMana
     public void addRecipe(ThermalRecipe recipe) {
 
         for (var input : recipe.getInputItems()) {
-            input.ingredient().itemStacks = null;
+            ThermalRecipeManagers.invalidateIngredientCache(input.ingredient());
         }
         if (!recipe.getInputItems().isEmpty()) {
             for (ItemStack recipeInput : recipe.getInputItems().get(0).getItems()) {

@@ -4,6 +4,7 @@ import cofh.core.util.helpers.FluidHelper;
 import cofh.lib.api.fluid.IFluidStackHolder;
 import cofh.lib.api.inventory.IItemStackHolder;
 import cofh.lib.util.crafting.ComparableItemStack;
+import cofh.thermal.lib.util.ThermalRecipeManagers;
 import cofh.thermal.lib.util.managers.AbstractManager;
 import cofh.thermal.lib.util.managers.IRecipeManager;
 import cofh.thermal.lib.util.recipes.IThermalInventory;
@@ -53,7 +54,7 @@ public class CrystallizerRecipeManager extends AbstractManager implements IRecip
     public void addRecipe(ThermalRecipe recipe) {
 
         for (var input : recipe.getInputItems()) {
-            input.ingredient().itemStacks = null;
+            ThermalRecipeManagers.invalidateIngredientCache(input.ingredient());
         }
         switch (recipe.getInputItems().size()) {
             case 1 -> {

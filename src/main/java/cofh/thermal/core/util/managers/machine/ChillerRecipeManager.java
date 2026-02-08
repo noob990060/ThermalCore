@@ -5,6 +5,7 @@ import cofh.lib.api.fluid.IFluidStackHolder;
 import cofh.lib.api.inventory.IItemStackHolder;
 import cofh.lib.util.crafting.ComparableItemStack;
 import cofh.thermal.core.common.item.SlotSealItem;
+import cofh.thermal.lib.util.ThermalRecipeManagers;
 import cofh.thermal.lib.util.managers.AbstractManager;
 import cofh.thermal.lib.util.managers.IRecipeManager;
 import cofh.thermal.lib.util.recipes.IThermalInventory;
@@ -50,7 +51,7 @@ public class ChillerRecipeManager extends AbstractManager implements IRecipeMana
     public void addRecipe(ThermalRecipe recipe) {
 
         for (var input : recipe.getInputItems()) {
-            input.ingredient().itemStacks = null;
+            ThermalRecipeManagers.invalidateIngredientCache(input.ingredient());
         }
         if (!recipe.getInputFluids().isEmpty()) {
             for (FluidStack fluidInput : recipe.getInputFluids().get(0).getFluids()) {

@@ -31,7 +31,6 @@ public class TCoreCommonSetupEvents {
 
         event.addListener((ResourceManagerReloadListener) manager -> {
                 ThermalRecipeManagers.instance().setServerRecipeManager(event.getServerResources().getRecipeManager());
-                ThermalRecipeManagers.instance().refreshServer();
         });
     }
 
