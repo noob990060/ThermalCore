@@ -62,7 +62,10 @@ public final class RegistrationHelper {
 
     public static DeferredHolder<Item, Item> registerBlock(String name, Supplier<Block> sup, Rarity rarity, String modId) {
 
-        return registerBlock(name, sup, () -> new BlockItemCoFH(BLOCKS.get(name), itemProperties().rarity(rarity)).setModId(modId));
+        return registerBlock(name, sup, () -> {
+            Block block = BLOCKS.get(name);
+            return new BlockItemCoFH(block, itemProperties().rarity(rarity)).setModId(modId);
+        });
     }
 
     public static void registerBlockOnly(String name, Supplier<Block> sup) {
@@ -91,7 +94,10 @@ public final class RegistrationHelper {
     public static DeferredHolder<Item, Item> registerAugmentableBlock(String name, Supplier<Block> sup, IntSupplier numSlots, BiPredicate<ItemStack, List<ItemStack>> validAugment, Rarity rarity, String modId) {
 
         BLOCKS.register(name, sup);
-        return registerItem(name, () -> new BlockItemAugmentable(BLOCKS.get(name), itemProperties().rarity(rarity)).setNumSlots(numSlots).setAugValidator(validAugment).setModId(modId));
+        return registerItem(name, () -> {
+            Block block = BLOCKS.get(name);
+            return new BlockItemAugmentable(block, itemProperties().rarity(rarity)).setNumSlots(numSlots).setAugValidator(validAugment).setModId(modId);
+        });
     }
     // endregion
 
@@ -251,7 +257,10 @@ public final class RegistrationHelper {
         Supplier<EntityType<? extends PrimedTntCoFH>> tntEntity = ENTITIES.register(id, () -> EntityType.Builder.<ThermalTNTEntity>of((type, world) -> new ThermalTNTEntity(type, world, action), MobCategory.MISC).fireImmune().sized(0.98F, 0.98F).build(id));
         registerBlockOnly(id, () -> new TntBlockCoFH((world, x, y, z, igniter) -> new ThermalTNTEntity(tntEntity.get(), world, action, x, y, z, igniter), of().mapColor(MapColor.COLOR_YELLOW).strength(0.0F).sound(SoundType.GRASS)));
         DetonateUtils.TNT.add(tntEntity);
-        return registerItem(id, () -> new BlockItemCoFH(BLOCKS.get(id), itemProperties()));
+        return registerItem(id, () -> {
+            Block block = BLOCKS.get(id);
+            return new BlockItemCoFH(block, itemProperties());
+        });
 
     }
 
